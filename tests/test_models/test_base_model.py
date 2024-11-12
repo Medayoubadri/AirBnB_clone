@@ -43,5 +43,19 @@ class TestBaseModel(unittest.TestCase):
         model.save()
         self.assertNotEqual(model.updated_at, old_updated_at)
 
+    def test_init_from_dict(self):
+        """Test initialization of BaseModel from a dictionary."""
+        my_model = BaseModel()
+        model_dict = my_model.to_dict()
+        new_model = BaseModel(**model_dict)
+
+        # Check if new_model's attributes match the original's attributes
+        self.assertEqual(new_model.id, my_model.id)
+        self.assertEqual(new_model.created_at, my_model.created_at)
+        self.assertEqual(new_model.updated_at, my_model.updated_at)
+        self.assertEqual(new_model.to_dict(), my_model.to_dict())
+        self.assertIsInstance(new_model.created_at, datetime)
+        self.assertIsInstance(new_model.updated_at, datetime)
+
 if __name__ == "__main__":
     unittest.main()
