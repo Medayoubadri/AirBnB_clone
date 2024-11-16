@@ -15,20 +15,20 @@ from models.amenity import Amenity
 from models.review import Review
 import ast
 
-classes = {
-    "BaseModel": BaseModel,
-    "User": User,
-    "State": State,
-    "City": City,
-    "Place": Place,
-    "Amenity": Amenity,
-    "Review": Review
-}
-
 
 class HBNBCommand(cmd.Cmd):
     """HBNB console"""
     prompt = '(hbnb) '
+    classes = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "State": State,
+        "City": City,
+        "Place": Place,
+        "Amenity": Amenity,
+        "Review": Review
+        }
+
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -62,7 +62,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -81,7 +81,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -101,7 +101,7 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             for obj in storage.all().values():
                 obj_list.append(str(obj))
-        elif args[0] in classes:
+        elif args[0] in HBNBCommand.classes:
             for key, obj in storage.all().items():
                 if key.startswith(args[0]):
                     obj_list.append(str(obj))
@@ -117,7 +117,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -200,7 +200,7 @@ class HBNBCommand(cmd.Cmd):
             print(f"*** Unknown syntax: {arg}")
             return
 
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
