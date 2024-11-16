@@ -142,19 +142,19 @@ class HBNBCommand(cmd.Cmd):
     #     setattr(obj, attr_name, attr_value)
     #     obj.save()
 
-    # def dic_parser(self, arg):
-    #     """
-    #     Parse the cmd string and return class name, method name, and arguments
-    #     """
-    #     parts = arg.split('.', 1)
-    #     if len(parts) != 2:
-    #         return None, None, None
-    #     class_name, method_with_args = parts
-    #     if '(' not in method_with_args or not method_with_args.endswith(')'):
-    #         return None, None, None
-    #     method_name, args_str = method_with_args.split('(', 1)
-    #     args_str = args_str[:-1]
-    #     return class_name, method_name, args_str
+    def dic_parser(self, arg):
+        """
+        Parse the cmd string and return class name, method name, and arguments
+        """
+        parts = arg.split('.', 1)
+        if len(parts) != 2:
+            return None, None, None
+        class_name, method_with_args = parts
+        if '(' not in method_with_args or not method_with_args.endswith(')'):
+            return None, None, None
+        method_name, args_str = method_with_args.split('(', 1)
+        args_str = args_str[:-1]
+        return class_name, method_name, args_str
 
     # def do_count(self, class_name):
     #     """Counts the number of instances of a class"""
@@ -192,35 +192,35 @@ class HBNBCommand(cmd.Cmd):
     #         else:
     #             print("** attribute name missing **")
 
-    # def default(self, arg):
-    #     """Handle class-specific commands"""
-    #     class_name, method_name, args_str = self.dic_parser(arg)
-    #     if class_name is None:
-    #         print(f"*** Unknown syntax: {arg}")
-    #         return
+    def default(self, arg):
+        """Handle class-specific commands"""
+        class_name, method_name, args_str = self.dic_parser(arg)
+        if class_name is None:
+            print(f"*** Unknown syntax: {arg}")
+            return
 
-    #     if class_name not in HBNBCommand.classes:
-    #         print("** class doesn't exist **")
-    #         return
+        if class_name not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
 
-    #     method_dispatch = {
-    #         'all': self.do_all,
-    #         'count': self.do_count,
-    #         'show': self.do_show,
-    #         'destroy': self.do_destroy,
-    #     }
+        method_dispatch = {
+            'all': self.do_all,
+            # 'count': self.do_count,
+            # 'show': self.do_show,
+            # 'destroy': self.do_destroy,
+        }
 
-    #     if method_name in method_dispatch:
-    #         method = method_dispatch[method_name]
-    #         if method_name == 'count':
-    #             method(class_name)
-    #         else:
-    #             args = f"{class_name} {args_str.strip('\"')}"
-    #             method(args)
-    #     elif method_name == 'update':
-    #         self.handle_update(class_name, args_str)
-    #     else:
-    #         print(f"*** Unknown syntax: {arg}")
+        if method_name in method_dispatch:
+            method = method_dispatch[method_name]
+            if method_name == 'count':
+                method(class_name)
+            else:
+                args = f"{class_name} {args_str.strip('\"')}"
+                method(args)
+        elif method_name == 'update':
+            self.handle_update(class_name, args_str)
+        else:
+            print(f"*** Unknown syntax: {arg}")
 
 
 if __name__ == '__main__':
