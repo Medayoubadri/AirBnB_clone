@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-
-"""Console module for HBNB project"""
-
+"""
+Console module for HBNB project 
+"""
 import cmd
 import re
 import shlex
@@ -15,26 +15,27 @@ from models.amenity import Amenity
 from models.review import Review
 import ast
 
-classes = {
-    "BaseModel": BaseModel,
-    "User": User,
-    "State": State,
-    "City": City,
-    "Place": Place,
-    "Amenity": Amenity,
-    "Review": Review
-}
 
 class HBNBCommand(cmd.Cmd):
-    """HBNB console"""
+    """HBNB console class"""
     prompt = '(hbnb) '
+    classes = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "State": State,
+        "City": City,
+        "Place": Place,
+        "Amenity": Amenity,
+        "Review": Review
+        }
+
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
         return True
 
     def do_EOF(self, arg):
-        """EOF command to exit the program"""
+        """EOF command to end the program"""
         print()
         return True
 
@@ -61,7 +62,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -80,7 +81,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -100,7 +101,7 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             for obj in storage.all().values():
                 obj_list.append(str(obj))
-        elif args[0] in classes:
+        elif args[0] in HBNBCommand.classes:
             for key, obj in storage.all().items():
                 if key.startswith(args[0]):
                     obj_list.append(str(obj))
@@ -116,7 +117,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -137,56 +138,91 @@ class HBNBCommand(cmd.Cmd):
         attr_value = args[3]
         try:
             attr_value = eval(attr_value)
-        except:
+        except Exception:
             pass
         setattr(obj, attr_name, attr_value)
         obj.save()
 
+    def dic_parser(self, arg):
+        """
+        Parse the cmd string and return class name, method name, and arguments
+        """
+        parts = arg.split('.', 1)
+        if len(parts) != 2:
+            return None, None, None
+        class_name, method_with_args = parts
+        if '(' not in method_with_args or not method_with_args.endswith(')'):
+            return None, None, None
+        method_name, args_str = method_with_args.split('(', 1)
+        args_str = args_str[:-1]
+        return class_name, method_name, args_str
+
+    def do_count(self, class_name):
+        """Counts the number of instances of a class"""
+        count = sum(
+            1 for key in storage.all() if key.startswith(f"{class_name}.")
+        )
+        print(count)
+
+    def handle_update(self, class_name, args_str):
+        """Handles the update command from default method"""
+        match = re.match(r'\s*"([^"]+)"\s*,\s*(\{.*\})\s*', args_str)
+        if match:
+            instance_id = match.group(1)
+            dict_str = match.group(2)
+            try:
+                update_dict = ast.literal_eval(dict_str)
+                if isinstance(update_dict, dict):
+                    for key, value in update_dict.items():
+                        self.do_update(
+                            f"{class_name} {instance_id} {key} {value}"
+                        )
+                else:
+                    print("** invalid dictionary format **")
+            except Exception as e:
+                print("** invalid dictionary format **")
+        else:
+            args = args_str.split(',')
+            if len(args) >= 3:
+                instance_id = args[0].strip().strip('"')
+                attr_name = args[1].strip().strip('"')
+                attr_value = args[2].strip().strip('"')
+                self.do_update(
+                    f"{class_name} {instance_id} {attr_name} {attr_value}"
+                )
+            else:
+                print("** attribute name missing **")
+
     def default(self, arg):
         """Handle class-specific commands"""
-        parts = arg.split('.', 1)
-        if len(parts) == 2:
-            class_name, method_with_args = parts
-            if '(' in method_with_args and method_with_args.endswith(')'):
-                method, args_str = method_with_args.split('(')
-                args_str = args_str[:-1]
-                if method == "all":
-                    self.do_all(class_name)
-                elif method == "count":
-                    print(sum(1 for key in storage.all() if key.startswith(f"{class_name}.")))
-                elif method == "show":
-                    self.do_show(f"{class_name} {args_str.strip('\"')}")
-                elif method == "destroy":
-                    self.do_destroy(f"{class_name} {args_str.strip('\"')}")
-                elif method == "update":
-                    match = re.match(r'\s*"([^"]+)"\s*,\s*(\{.*\})\s*', args_str)
-                    if match:
-                        instance_id = match.group(1)
-                        dict_str = match.group(2)
-                        try:
-                            update_dict = ast.literal_eval(dict_str)
-                            if isinstance(update_dict, dict):
-                                for key, value in update_dict.items():
-                                    self.do_update(f"{class_name} {instance_id} {key} {value}")
-                            else:
-                                print("** invalid dictionary format **")
-                        except Exception as e:
-                            print("** invalid dictionary format **")
-                    else:
-                        args = args_str.split(',')
-                        if len(args) >= 3:
-                            instance_id = args[0].strip().strip('"')
-                            attr_name = args[1].strip().strip('"')
-                            attr_value = args[2].strip().strip('"')
-                            self.do_update(f"{class_name} {instance_id} {attr_name} {attr_value}")
-                        else:
-                            print("** attribute name missing **")
-                else:
-                    print(f"*** Unknown syntax: {arg}")
+        class_name, method_name, args_str = self.dic_parser(arg)
+        if class_name is None:
+            print(f"*** Unknown syntax: {arg}")
+            return
+
+        if class_name not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+
+        method_dispatch = {
+            'all': self.do_all,
+            'count': self.do_count,
+            'show': self.do_show,
+            'destroy': self.do_destroy,
+        }
+
+        if method_name in method_dispatch:
+            method = method_dispatch[method_name]
+            if method_name == 'count':
+                method(class_name)
             else:
-                print(f"*** Unknown syntax: {arg}")
+                args = f"{class_name} {args_str.strip('\"')}"
+                method(args)
+        elif method_name == 'update':
+            self.handle_update(class_name, args_str)
         else:
             print(f"*** Unknown syntax: {arg}")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
