@@ -1,9 +1,7 @@
 #!/usr/bin/python3
-
 '''
 Defines the Place class and its relationships.
 '''
-
 from models.base_model import BaseModel
 
 

@@ -2,7 +2,6 @@
 '''
 Defines the City class and its relationships.
 '''
-
 from models.base_model import BaseModel
 
 
