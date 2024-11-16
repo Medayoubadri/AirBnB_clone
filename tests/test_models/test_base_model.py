@@ -125,6 +125,54 @@ class TestBaseModel(unittest.TestCase):
             )
         self.assertEqual(reloaded_instance.name, "Test Name")
 
+    def test_invalid_datetime_in_kwargs(self):
+        """Test that BaseModel handles invalid datetime strings in kwargs."""
+        invalid_datetime = "invalid-datetime"
+        model_dict = self.model.to_dict()
+        model_dict["created_at"] = invalid_datetime
+        model_dict["updated_at"] = invalid_datetime
+        new_model = BaseModel(**model_dict)
+        self.assertNotEqual(new_model.created_at, invalid_datetime)
+        self.assertNotEqual(new_model.updated_at, invalid_datetime)
+        self.assertIsInstance(new_model.created_at, datetime)
+        self.assertIsInstance(new_model.updated_at, datetime)
+
+    def test_save_existing_file(self):
+        """Test that save method updates an existing file.json file."""
+        self.model.save()
+        old_updated_at = self.model.updated_at
+        self.model.name = "Updated Name"
+        self.model.save()
+        with open("file.json", "r") as f:
+            content = json.load(f)
+        self.assertIn(f"BaseModel.{self.model.id}", content)
+        self.assertEqual(content[f"BaseModel.{self.model.id}"]["name"], "Updated Name")
+        self.assertGreater(self.model.updated_at, old_updated_at)
+
+    def test_to_dict_with_additional_attributes(self):
+        """Test that to_dict method includes additional attributes."""
+        self.model.name = "Test Name"
+        self.model.number = 42
+        model_dict = self.model.to_dict()
+        self.assertIn("name", model_dict)
+        self.assertIn("number", model_dict)
+        self.assertEqual(model_dict["name"], "Test Name")
+        self.assertEqual(model_dict["number"], 42)
+
+    def test_reload_with_multiple_instances(self):
+        """Test that reload properly restores multiple instances from file.json."""
+        model1 = BaseModel()
+        model1.name = "Model 1"
+        model1.save()
+        model2 = BaseModel()
+        model2.name = "Model 2"
+        model2.save()
+        models.storage.reload()
+        self.assertIn(f"BaseModel.{model1.id}", models.storage.all())
+        self.assertIn(f"BaseModel.{model2.id}", models.storage.all())
+        self.assertEqual(models.storage.all()[f"BaseModel.{model1.id}"].name, "Model 1")
+        self.assertEqual(models.storage.all()[f"BaseModel.{model2.id}"].name, "Model 2")
+
 
 if __name__ == '__main__':
     unittest.main()
