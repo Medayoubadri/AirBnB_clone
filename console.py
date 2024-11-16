@@ -13,6 +13,7 @@ from models.review import Review
 import ast
 import json
 
+
 class HBNBCommand(cmd.Cmd):
     """HBNB console"""
     prompt = '(hbnb) '
@@ -172,7 +173,7 @@ class HBNBCommand(cmd.Cmd):
             dict_str = args_str[start:end+1]
 
             update_dict = ast.literal_eval(dict_str)
-            
+
             if isinstance(update_dict, dict):
                 for key, value in update_dict.items():
                     self.do_update(
@@ -180,7 +181,7 @@ class HBNBCommand(cmd.Cmd):
                         )
             else:
                 raise ValueError("Invalid dictionary format")
-        
+
         except (ValueError, SyntaxError):
             args = shlex.split(args_str)
             if len(args) >= 3:
@@ -222,6 +223,7 @@ class HBNBCommand(cmd.Cmd):
             self.handle_update(class_name, args_str)
         else:
             print(f"*** Unknown syntax: {arg}")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
