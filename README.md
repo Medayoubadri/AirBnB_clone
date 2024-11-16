@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="/assets/HBNB.png" alt="AirBnb Clone">
+</p>
 
 # AirBnB Clone - Command Interpreter
 
