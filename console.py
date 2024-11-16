@@ -109,38 +109,38 @@ class HBNBCommand(cmd.Cmd):
             return
         print(obj_list)
 
-    # def do_update(self, arg):
-    #     """Updates an instance based on the class name and id"""
-    #     args = shlex.split(arg)
-    #     if not args:
-    #         print("** class name missing **")
-    #         return
-    #     class_name = args[0]
-    #     if class_name not in HBNBCommand.classes:
-    #         print("** class doesn't exist **")
-    #         return
-    #     if len(args) < 2:
-    #         print("** instance id missing **")
-    #         return
-    #     key = f"{class_name}.{args[1]}"
-    #     if key not in storage.all():
-    #         print("** no instance found **")
-    #         return
-    #     if len(args) < 3:
-    #         print("** attribute name missing **")
-    #         return
-    #     if len(args) < 4:
-    #         print("** value missing **")
-    #         return
-    #     obj = storage.all()[key]
-    #     attr_name = args[2]
-    #     attr_value = args[3]
-    #     try:
-    #         attr_value = eval(attr_value)
-    #     except Exception:
-    #         pass
-    #     setattr(obj, attr_name, attr_value)
-    #     obj.save()
+    def do_update(self, arg):
+        """Updates an instance based on the class name and id"""
+        args = shlex.split(arg)
+        if not args:
+            print("** class name missing **")
+            return
+        class_name = args[0]
+        if class_name not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        key = f"{class_name}.{args[1]}"
+        if key not in storage.all():
+            print("** no instance found **")
+            return
+        if len(args) < 3:
+            print("** attribute name missing **")
+            return
+        if len(args) < 4:
+            print("** value missing **")
+            return
+        obj = storage.all()[key]
+        attr_name = args[2]
+        attr_value = args[3]
+        try:
+            attr_value = eval(attr_value)
+        except Exception:
+            pass
+        setattr(obj, attr_name, attr_value)
+        obj.save()
 
     def dic_parser(self, arg):
         """
@@ -156,41 +156,41 @@ class HBNBCommand(cmd.Cmd):
         args_str = args_str[:-1]
         return class_name, method_name, args_str
 
-    # def do_count(self, class_name):
-    #     """Counts the number of instances of a class"""
-    #     count = sum(
-    #         1 for key in storage.all() if key.startswith(f"{class_name}.")
-    #     )
-    #     print(count)
+    def do_count(self, class_name):
+        """Counts the number of instances of a class"""
+        count = sum(
+            1 for key in storage.all() if key.startswith(f"{class_name}.")
+        )
+        print(count)
 
-    # def handle_update(self, class_name, args_str):
-    #     """Handles the update command from default method"""
-    #     match = re.match(r'\s*"([^"]+)"\s*,\s*(\{.*\})\s*', args_str)
-    #     if match:
-    #         instance_id = match.group(1)
-    #         dict_str = match.group(2)
-    #         try:
-    #             update_dict = ast.literal_eval(dict_str)
-    #             if isinstance(update_dict, dict):
-    #                 for key, value in update_dict.items():
-    #                     self.do_update(
-    #                         f"{class_name} {instance_id} {key} {value}"
-    #                     )
-    #             else:
-    #                 print("** invalid dictionary format **")
-    #         except Exception as e:
-    #             print("** invalid dictionary format **")
-    #     else:
-    #         args = args_str.split(',')
-    #         if len(args) >= 3:
-    #             instance_id = args[0].strip().strip('"')
-    #             attr_name = args[1].strip().strip('"')
-    #             attr_value = args[2].strip().strip('"')
-    #             self.do_update(
-    #                 f"{class_name} {instance_id} {attr_name} {attr_value}"
-    #             )
-    #         else:
-    #             print("** attribute name missing **")
+    def handle_update(self, class_name, args_str):
+        """Handles the update command from default method"""
+        match = re.match(r'\s*"([^"]+)"\s*,\s*(\{.*\})\s*', args_str)
+        if match:
+            instance_id = match.group(1)
+            dict_str = match.group(2)
+            try:
+                update_dict = ast.literal_eval(dict_str)
+                if isinstance(update_dict, dict):
+                    for key, value in update_dict.items():
+                        self.do_update(
+                            f"{class_name} {instance_id} {key} {value}"
+                        )
+                else:
+                    print("** invalid dictionary format **")
+            except Exception as e:
+                print("** invalid dictionary format **")
+        else:
+            args = args_str.split(',')
+            if len(args) >= 3:
+                instance_id = args[0].strip().strip('"')
+                attr_name = args[1].strip().strip('"')
+                attr_value = args[2].strip().strip('"')
+                self.do_update(
+                    f"{class_name} {instance_id} {attr_name} {attr_value}"
+                )
+            else:
+                print("** attribute name missing **")
 
     def default(self, arg):
         """Handle class-specific commands"""
@@ -205,9 +205,9 @@ class HBNBCommand(cmd.Cmd):
 
         method_dispatch = {
             'all': self.do_all,
-            # 'count': self.do_count,
-            # 'show': self.do_show,
-            # 'destroy': self.do_destroy,
+            'count': self.do_count,
+            'show': self.do_show,
+            'destroy': self.do_destroy,
         }
 
         if method_name in method_dispatch:
