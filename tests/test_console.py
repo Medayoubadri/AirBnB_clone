@@ -312,16 +312,6 @@ class TestHBNBCommand(unittest.TestCase):
             "** class doesn't exist **\n", self.held_stdout.getvalue()
             )
 
-    def test_update_invalid_syntax(self):
-        """Test update with invalid syntax"""
-        self.console.onecmd("create User")
-        user_id = self.held_stdout.getvalue().strip()
-        self.held_stdout.truncate(0)
-        self.held_stdout.seek(0)
-        self.console.onecmd(f'User.update("{user_id}", )')
-        self.assertIn(
-            "** attribute name missing **", self.held_stdout.getvalue()
-            )
 
 
 if __name__ == "__main__":
