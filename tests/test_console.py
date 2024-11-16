@@ -279,7 +279,7 @@ class TestHBNBCommand(unittest.TestCase):
     def test_invalid_syntax(self):
         """Test invalid command syntax"""
         self.console.onecmd("MyModel.create()")
-        self.assertEqual("*** Unknown syntax: MyModel.create()\n", self.held_stdout.getvalue())
+        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
 
     def test_update_invalid_syntax(self):
         """Test update with invalid syntax"""

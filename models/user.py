@@ -6,6 +6,7 @@ Defines the User class and its relationships.
 
 from models.base_model import BaseModel
 
+
 class User(BaseModel):
     """
     User class inherits from BaseModel.

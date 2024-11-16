@@ -6,6 +6,7 @@ Defines the Place class and its relationships.
 
 from models.base_model import BaseModel
 
+
 class Place(BaseModel):
     """
     Place class inherits from BaseModel.

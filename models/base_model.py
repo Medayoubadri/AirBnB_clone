@@ -7,6 +7,7 @@ BaseModel defines all common attributes/methods for other classes.
 import uuid
 from datetime import datetime
 
+
 class BaseModel:
     """BaseModel defines all common attributes/methods for other classes."""
 
@@ -26,7 +27,7 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
             self.save()
-            
+
             from models import storage
             storage.new(self)
 
@@ -37,7 +38,7 @@ class BaseModel:
     def save(self):
         """Updates `updated_at` and saves the instance to storage."""
         self.updated_at = datetime.now()
-        
+
         from models import storage
         storage.save()
 
@@ -48,4 +49,3 @@ class BaseModel:
         my_dict["created_at"] = self.created_at.isoformat()
         my_dict["updated_at"] = self.updated_at.isoformat()
         return my_dict
-
