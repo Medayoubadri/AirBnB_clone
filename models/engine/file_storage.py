@@ -5,7 +5,12 @@ to a JSON file and deserializes JSON file to instances.
 '''
 import json
 from models.base_model import BaseModel
-
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 class FileStorage:
     __file_path = "file.json"
@@ -24,7 +29,7 @@ class FileStorage:
         """Serializes __objects to the JSON file."""
         obj_dict = {
             key: obj.to_dict() for key, obj in FileStorage.__objects.items()
-        }
+            }
         with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
             json.dump(obj_dict, f)
 
@@ -34,7 +39,8 @@ class FileStorage:
             with open(self.__file_path, "r", encoding="utf-8") as file:
                 obj_dict = json.load(file)
                 for key, obj_data in obj_dict.items():
-                    if obj_data["__class__"] == "BaseModel":
-                        self.__objects[key] = BaseModel(**obj_data)
+                    class_name = obj_data["__class__"]
+                    if class_name in globals():
+                        self.__objects[key] = globals()[class_name](**obj_data)
         except Exception:
             pass

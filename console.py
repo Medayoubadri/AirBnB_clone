@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-"""
-Console module for HBNB project
-"""
+
+"""Console module for HBNB project"""
+
 import cmd
-import re
 import shlex
 from models import storage
 from models.base_model import BaseModel
@@ -14,20 +13,21 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 import ast
+import json
 
+classes = {
+    "BaseModel": BaseModel,
+    "User": User,
+    "State": State,
+    "City": City,
+    "Place": Place,
+    "Amenity": Amenity,
+    "Review": Review
+}
 
 class HBNBCommand(cmd.Cmd):
-    """HBNB console class"""
+    """HBNB console"""
     prompt = '(hbnb) '
-    classes = {
-        "BaseModel": BaseModel,
-        "User": User,
-        "State": State,
-        "City": City,
-        "Place": Place,
-        "Amenity": Amenity,
-        "Review": Review
-        }
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -61,7 +61,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in HBNBCommand.classes:
+        if class_name not in classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -80,7 +80,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in HBNBCommand.classes:
+        if class_name not in classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -100,7 +100,7 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             for obj in storage.all().values():
                 obj_list.append(str(obj))
-        elif args[0] in HBNBCommand.classes:
+        elif args[0] in classes:
             for key, obj in storage.all().items():
                 if key.startswith(args[0]):
                     obj_list.append(str(obj))
@@ -116,7 +116,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in HBNBCommand.classes:
+        if class_name not in classes:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -136,7 +136,7 @@ class HBNBCommand(cmd.Cmd):
         attr_name = args[2]
         attr_value = args[3]
         try:
-            attr_value = eval(attr_value)
+            attr_value = ast.literal_eval(attr_value)
         except Exception:
             pass
         setattr(obj, attr_name, attr_value)
@@ -165,30 +165,34 @@ class HBNBCommand(cmd.Cmd):
 
     def handle_update(self, class_name, args_str):
         """Handles the update command from default method"""
-        match = re.match(r'\s*"([^"]+)"\s*,\s*(\{.*\})\s*', args_str)
-        if match:
-            instance_id = match.group(1)
-            dict_str = match.group(2)
-            try:
-                update_dict = ast.literal_eval(dict_str)
-                if isinstance(update_dict, dict):
-                    for key, value in update_dict.items():
-                        self.do_update(
-                            f"{class_name} {instance_id} {key} {value}"
+        args_str = args_str.strip().strip("'\"")
+
+        try:
+            start = args_str.index('{')
+            end = args_str.rindex('}')
+
+            instance_id = args_str[:start].strip().strip(',').strip("'\"")
+            dict_str = args_str[start:end+1]
+
+            update_dict = ast.literal_eval(dict_str)
+            
+            if isinstance(update_dict, dict):
+                for key, value in update_dict.items():
+                    self.do_update(
+                        f"{class_name} {instance_id} {key} {json.dumps(value)}"
                         )
-                else:
-                    print("** invalid dictionary format **")
-            except Exception as e:
-                print("** invalid dictionary format **")
-        else:
-            args = args_str.split(',')
+            else:
+                raise ValueError("Invalid dictionary format")
+        
+        except (ValueError, SyntaxError):
+            args = shlex.split(args_str)
             if len(args) >= 3:
-                instance_id = args[0].strip().strip('"')
-                attr_name = args[1].strip().strip('"')
-                attr_value = args[2].strip().strip('"')
+                instance_id = args[0]
+                attr_name = args[1]
+                attr_value = args[2]
                 self.do_update(
                     f"{class_name} {instance_id} {attr_name} {attr_value}"
-                )
+                    )
             else:
                 print("** attribute name missing **")
 
@@ -199,7 +203,7 @@ class HBNBCommand(cmd.Cmd):
             print(f"*** Unknown syntax: {arg}")
             return
 
-        if class_name not in HBNBCommand.classes:
+        if class_name not in classes:
             print("** class doesn't exist **")
             return
 
@@ -221,7 +225,6 @@ class HBNBCommand(cmd.Cmd):
             self.handle_update(class_name, args_str)
         else:
             print(f"*** Unknown syntax: {arg}")
-
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
