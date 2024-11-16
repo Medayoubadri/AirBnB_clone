@@ -11,13 +11,6 @@ from datetime import datetime
 class BaseModel:
     """
     BaseModel defines all common attributes methods for other classes.
-    ATTRIBUTES:
-        - id: string - unique identifier
-        - created_at: datetime - creation date
-        - updated_at: datetime - update date
-        __str__: returns a string representation of the instance
-        save: updates the public instance attribute updated_at
-        to_dict: returns a dictionary representation of a BaseModel instance
     """
 
     def __init__(self, *args, **kwargs):
@@ -25,10 +18,7 @@ class BaseModel:
         if kwargs:
             for key, value in kwargs.items():
                 if key == "created_at" or key == "updated_at":
-                    try:
-                        setattr(self, key, datetime.fromisoformat(value))
-                    except ValueError:
-                        setattr(self, key, datetime.now())
+                    setattr(self, key, datetime.fromisoformat(value))
                 elif key != "__class__":
                     setattr(self, key, value)
             if "id" not in kwargs:
@@ -41,10 +31,6 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            self.save()
-
-            from models import storage
-            storage.new(self)
 
     def __str__(self):
         """Returns a string representation of the BaseModel instance."""
@@ -52,11 +38,10 @@ class BaseModel:
 
     def save(self):
         """Updates `updated_at` and saves the instance to storage."""
-        if not hasattr(self, "id"):
-            self.id = str(uuid.uuid4())
         self.updated_at = datetime.now()
 
         from models import storage
+        storage.new(self)  # Add to storage only if it's a new object
         storage.save()
 
     def to_dict(self):

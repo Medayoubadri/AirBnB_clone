@@ -5,12 +5,6 @@ to a JSON file and deserializes JSON file to instances.
 '''
 import json
 from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
 
 
 class FileStorage:
@@ -40,8 +34,7 @@ class FileStorage:
             with open(self.__file_path, "r", encoding="utf-8") as file:
                 obj_dict = json.load(file)
                 for key, obj_data in obj_dict.items():
-                    class_name = obj_data["__class__"]
-                    if class_name in globals():
-                        self.__objects[key] = globals()[class_name](**obj_data)
+                    if obj_data["__class__"] == "BaseModel":
+                        self.__objects[key] = BaseModel(**obj_data)
         except Exception:
             pass
