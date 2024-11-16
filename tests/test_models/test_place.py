@@ -12,6 +12,7 @@ from datetime import datetime
 from models.place import Place
 from models import storage
 
+
 class TestPlace(unittest.TestCase):
     """Comprehensive tests for the Place class."""
 
@@ -21,7 +22,7 @@ class TestPlace(unittest.TestCase):
         self.place.city_id = "1234"
         self.place.user_id = "5678"
         self.place.name = "YO MAMA's BEACH HOUSE"
-        self.place.description = "A Big house just like Yo mama. It's too expensive for you anyway."
+        self.place.description = "Big house Too expensive for you anyway."
         self.place.number_rooms = 3
         self.place.number_bathrooms = 2
         self.place.max_guest = 6
@@ -123,8 +124,12 @@ class TestPlace(unittest.TestCase):
         place_dict = self.place.to_dict()
         self.assertIsInstance(place_dict["created_at"], str)
         self.assertIsInstance(place_dict["updated_at"], str)
-        self.assertEqual(place_dict["created_at"], self.place.created_at.isoformat())
-        self.assertEqual(place_dict["updated_at"], self.place.updated_at.isoformat())
+        self.assertEqual(
+            place_dict["created_at"], self.place.created_at.isoformat()
+            )
+        self.assertEqual(
+            place_dict["updated_at"], self.place.updated_at.isoformat()
+            )
 
     def test_to_dict_additional_attributes(self):
         """Test that to_dict() includes dynamically added attributes."""
@@ -151,7 +156,7 @@ class TestPlace(unittest.TestCase):
             "city_id": "1234",
             "user_id": "5678",
             "name": "YO MAMA's BEACH HOUSE",
-            "description": "A Big house just like Yo mama. It's too expensive for you anyway.",
+            "description": "Big house Too expensive for you anyway.",
             "number_rooms": 3,
             "number_bathrooms": 2,
             "max_guest": 6,
@@ -160,6 +165,7 @@ class TestPlace(unittest.TestCase):
             "longitude": -119.4179
         }
         self.assertEqual(self.place.to_dict(), expected_dict)
+
 
 if __name__ == "__main__":
     unittest.main()

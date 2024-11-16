@@ -12,8 +12,9 @@ import os
 import json
 from models import storage
 
+
 class TestFileStorage(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         """Set up for all tests"""
@@ -66,7 +67,9 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(reloaded_model.number, 42)
 
     def test_reload_with_no_file(self):
-        """Test that reload does not throw an error if file.json is missing."""
+        """
+        Test that reload does not throw an error if file.json is missing.
+        """
         if os.path.exists("file.json"):
             os.remove("file.json")
         try:
@@ -94,6 +97,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertIn(user_key, self.storage.all())
         reloaded_user = self.storage.all()[user_key]
         self.assertEqual(reloaded_user.name, "John Doe")
+
 
 if __name__ == '__main__':
     unittest.main()

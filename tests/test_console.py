@@ -17,6 +17,7 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 
+
 class TestHBNBCommand(unittest.TestCase):
     """Tests the HBNBCommand console."""
 
@@ -35,7 +36,6 @@ class TestHBNBCommand(unittest.TestCase):
         self.held_stdout = StringIO()
         self.patcher = patch('sys.stdout', new=self.held_stdout)
         self.patcher.start()
-        # Backup the file.json if it exists
         if os.path.isfile("file.json"):
             os.rename("file.json", "file.json.bak")
 
@@ -43,13 +43,10 @@ class TestHBNBCommand(unittest.TestCase):
         """Reset stdout and clean up test environment"""
         self.patcher.stop()
         self.held_stdout.close()
-        # Clear the storage
         FileStorage._FileStorage__objects = {}
-        storage.save()  # Save the cleared storage to file.json
-        # Remove the created file.json
+        storage.save()
         if os.path.isfile("file.json"):
             os.remove("file.json")
-        # Restore original file.json if backed up
         if os.path.isfile("file.json.bak"):
             os.rename("file.json.bak", "file.json")
 
@@ -68,12 +65,16 @@ class TestHBNBCommand(unittest.TestCase):
     def test_create_missing_class(self):
         """Test create with no class name"""
         self.console.onecmd("create")
-        self.assertEqual("** class name missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class name missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_create_invalid_class(self):
         """Test create with invalid class name"""
         self.console.onecmd("create MyModel")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_create_valid_class(self):
         """Test create with valid class name"""
@@ -86,22 +87,30 @@ class TestHBNBCommand(unittest.TestCase):
     def test_show_missing_class(self):
         """Test show command with missing class"""
         self.console.onecmd("show")
-        self.assertEqual("** class name missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class name missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_show_invalid_class(self):
         """Test show command with invalid class"""
         self.console.onecmd("show MyModel")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_show_missing_id(self):
         """Test show command with missing ID"""
         self.console.onecmd("show BaseModel")
-        self.assertEqual("** instance id missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** instance id missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_show_no_instance_found(self):
         """Test show command with non-existent instance"""
         self.console.onecmd("show BaseModel 1234")
-        self.assertEqual("** no instance found **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** no instance found **\n", self.held_stdout.getvalue()
+            )
 
     def test_show_valid_instance(self):
         """Test show command with valid class and ID"""
@@ -116,22 +125,30 @@ class TestHBNBCommand(unittest.TestCase):
     def test_destroy_missing_class(self):
         """Test destroy command with missing class"""
         self.console.onecmd("destroy")
-        self.assertEqual("** class name missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class name missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_destroy_invalid_class(self):
         """Test destroy command with invalid class"""
         self.console.onecmd("destroy MyModel")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_destroy_missing_id(self):
         """Test destroy command with missing ID"""
         self.console.onecmd("destroy User")
-        self.assertEqual("** instance id missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** instance id missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_destroy_no_instance_found(self):
         """Test destroy command with non-existent instance"""
         self.console.onecmd("destroy User 1234")
-        self.assertEqual("** no instance found **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** no instance found **\n", self.held_stdout.getvalue()
+            )
 
     def test_destroy_valid_instance(self):
         """Test destroy command with valid class and ID"""
@@ -171,27 +188,37 @@ class TestHBNBCommand(unittest.TestCase):
     def test_all_invalid_class(self):
         """Test all command with invalid class"""
         self.console.onecmd("all MyModel")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_missing_class(self):
         """Test update command with missing class"""
         self.console.onecmd("update")
-        self.assertEqual("** class name missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class name missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_invalid_class(self):
         """Test update command with invalid class"""
         self.console.onecmd("update MyModel")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_missing_id(self):
         """Test update command with missing ID"""
         self.console.onecmd("update User")
-        self.assertEqual("** instance id missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** instance id missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_no_instance_found(self):
         """Test update command with non-existent instance"""
         self.console.onecmd("update User 1234")
-        self.assertEqual("** no instance found **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** no instance found **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_missing_attribute_name(self):
         """Test update command with missing attribute name"""
@@ -200,7 +227,9 @@ class TestHBNBCommand(unittest.TestCase):
         self.held_stdout.truncate(0)
         self.held_stdout.seek(0)
         self.console.onecmd(f"update User {user_id}")
-        self.assertEqual("** attribute name missing **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** attribute name missing **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_missing_value(self):
         """Test update command with missing value"""
@@ -279,7 +308,9 @@ class TestHBNBCommand(unittest.TestCase):
     def test_invalid_syntax(self):
         """Test invalid command syntax"""
         self.console.onecmd("MyModel.create()")
-        self.assertEqual("** class doesn't exist **\n", self.held_stdout.getvalue())
+        self.assertEqual(
+            "** class doesn't exist **\n", self.held_stdout.getvalue()
+            )
 
     def test_update_invalid_syntax(self):
         """Test update with invalid syntax"""
@@ -288,7 +319,10 @@ class TestHBNBCommand(unittest.TestCase):
         self.held_stdout.truncate(0)
         self.held_stdout.seek(0)
         self.console.onecmd(f'User.update("{user_id}", )')
-        self.assertIn("** attribute name missing **", self.held_stdout.getvalue())
+        self.assertIn(
+            "** attribute name missing **", self.held_stdout.getvalue()
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

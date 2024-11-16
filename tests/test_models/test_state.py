@@ -12,6 +12,7 @@ from datetime import datetime
 from models.state import State
 from models import storage
 
+
 class TestState(unittest.TestCase):
     """Comprehensive and witty tests for the State class."""
 
@@ -48,7 +49,10 @@ class TestState(unittest.TestCase):
         self.assertIsInstance(self.state.updated_at, datetime)
 
     def test_different_created_at_for_multiple_instances(self):
-        """Test different created_at times for distinct instances. Time waits for no one."""
+        """
+        Test different created_at times for distinct instances.
+        Time waits for no one.
+        """
         state2 = State()
         sleep(0.01)
         state3 = State()
@@ -73,7 +77,10 @@ class TestState(unittest.TestCase):
         self.assertTrue(os.path.exists("file.json"))
 
     def test_save_file_content(self):
-        """Test that save() writes correct data to file.json. California dreaming? Nah, just testing."""
+        """
+        Test that save() writes correct data to file.json.
+        California dreaming? Nah, just testing.
+        """
         self.state.save()
         with open("file.json", "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -82,7 +89,10 @@ class TestState(unittest.TestCase):
         self.assertEqual(data[key]["name"], "California")
 
     def test_save_with_invalid_argument(self):
-        """Test save() with an invalid argument raises a TypeError. No freeloaders allowed."""
+        """
+        Test save() with an invalid argument raises a TypeError.
+        No freeloaders allowed.
+        """
         with self.assertRaises(TypeError):
             self.state.save(None)
 
@@ -101,23 +111,36 @@ class TestState(unittest.TestCase):
         state_dict = self.state.to_dict()
         self.assertIsInstance(state_dict["created_at"], str)
         self.assertIsInstance(state_dict["updated_at"], str)
-        self.assertEqual(state_dict["created_at"], self.state.created_at.isoformat())
-        self.assertEqual(state_dict["updated_at"], self.state.updated_at.isoformat())
+        self.assertEqual(
+            state_dict["created_at"], self.state.created_at.isoformat()
+            )
+        self.assertEqual(
+            state_dict["updated_at"], self.state.updated_at.isoformat()
+            )
 
     def test_to_dict_additional_attributes(self):
-        """Test that to_dict() includes dynamically added attributes. California knows how to party."""
+        """
+        Test that to_dict() includes dynamically added attributes.
+        California knows how to party.
+        """
         self.state.governor = "The Terminator"
         state_dict = self.state.to_dict()
         self.assertIn("governor", state_dict)
         self.assertEqual(state_dict["governor"], "The Terminator")
 
     def test_to_dict_with_invalid_argument(self):
-        """Test that to_dict() with invalid arguments raises TypeError. No freeloaders allowed in this method either."""
+        """
+        Test that to_dict() with invalid arguments raises TypeError.
+        No freeloaders allowed in this method either.
+        """
         with self.assertRaises(TypeError):
             self.state.to_dict(None)
 
     def test_to_dict_output(self):
-        """Test that to_dict() output matches expected dictionary. Only the Golden State vibes."""
+        """
+        Test to_dict() output matches expected dictionary.
+        Only the Golden State vibes.
+        """
         self.state.id = "123456"
         self.state.created_at = datetime(2024, 1, 1, 12, 0, 0)
         self.state.updated_at = datetime(2024, 1, 1, 12, 0, 0)
@@ -131,6 +154,7 @@ class TestState(unittest.TestCase):
         }
         self.state.governor = "Arnold Schwarzenegger (in our dreams)"
         self.assertEqual(self.state.to_dict(), expected_dict)
+
 
 if __name__ == "__main__":
     unittest.main()

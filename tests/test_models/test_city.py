@@ -12,6 +12,7 @@ from datetime import datetime
 from models.city import City
 from models import storage
 
+
 class TestCity(unittest.TestCase):
     """Comprehensive tests for the City class."""
 
@@ -49,7 +50,10 @@ class TestCity(unittest.TestCase):
         self.assertIsInstance(self.city.updated_at, datetime)
 
     def test_different_created_at_for_multiple_instances(self):
-        """Test different created_at times for distinct instances. Not even time can make Gotham safer."""
+        """
+        Test different created_at times for distinct instances.
+        Not even time can make Gotham safer.
+        """
         city2 = City()
         sleep(0.01)
         city3 = City()
@@ -63,7 +67,10 @@ class TestCity(unittest.TestCase):
         self.assertEqual(self.city.state_id, "nyc-001")
 
     def test_additional_attributes(self):
-        """Test adding new attributes to a City instance. Gotham could use more heroes."""
+        """
+        Test adding new attributes to a City instance.
+        Gotham could use more heroes.
+        """
         self.city.mayor = "Bruce Wayne"
         self.assertEqual(self.city.mayor, "Bruce Wayne")
 
@@ -81,7 +88,10 @@ class TestCity(unittest.TestCase):
         self.assertTrue(os.path.exists("file.json"))
 
     def test_save_file_content(self):
-        """Test that save() writes correct data to file.json. Gotham needs order, and so does this test."""
+        """
+        Test that save() writes correct data to file.json.
+        Gotham needs order, and so does this test.
+        """
         self.city.save()
         with open("file.json", "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -90,7 +100,10 @@ class TestCity(unittest.TestCase):
         self.assertEqual(data[key]["name"], "Gotham")
 
     def test_save_with_invalid_argument(self):
-        """Test save() with an invalid argument raises a TypeError. Only vigilantes, no free riders."""
+        """
+        Test save() with an invalid argument raises a TypeError.
+        Only vigilantes, no free riders.
+        """
         with self.assertRaises(TypeError):
             self.city.save(None)
 
@@ -110,23 +123,34 @@ class TestCity(unittest.TestCase):
         city_dict = self.city.to_dict()
         self.assertIsInstance(city_dict["created_at"], str)
         self.assertIsInstance(city_dict["updated_at"], str)
-        self.assertEqual(city_dict["created_at"], self.city.created_at.isoformat())
-        self.assertEqual(city_dict["updated_at"], self.city.updated_at.isoformat())
+        self.assertEqual(
+            city_dict["created_at"], self.city.created_at.isoformat())
+        self.assertEqual(
+            city_dict["updated_at"], self.city.updated_at.isoformat())
 
     def test_to_dict_additional_attributes(self):
-        """Test that to_dict() includes dynamically added attributes. Gotham’s secrets don’t stay hidden."""
+        """
+        Test that to_dict() includes dynamically added attributes.
+        Gotham’s secrets don’t stay hidden.
+        """
         self.city.hero = "Batman"
         city_dict = self.city.to_dict()
         self.assertIn("hero", city_dict)
         self.assertEqual(city_dict["hero"], "Batman")
 
     def test_to_dict_with_invalid_argument(self):
-        """Test that to_dict() with invalid arguments raises TypeError. Even Gotham has rules."""
+        """
+        Test that to_dict() with invalid arguments raises TypeError.
+        Even Gotham has rules.
+        """
         with self.assertRaises(TypeError):
             self.city.to_dict(None)
 
     def test_to_dict_output(self):
-        """Test that to_dict() output matches expected dictionary. The city, just as Batman left it."""
+        """
+        Test that to_dict() output matches expected dictionary.
+        The city, just as Batman left it.
+        """
         self.city.id = "123456"
         self.city.created_at = datetime(2024, 1, 1, 12, 0, 0)
         self.city.updated_at = datetime(2024, 1, 1, 12, 0, 0)
@@ -141,6 +165,7 @@ class TestCity(unittest.TestCase):
         }
         self.city.mayor = "Bruce Wayne"
         self.assertEqual(self.city.to_dict(), expected_dict)
+
 
 if __name__ == "__main__":
     unittest.main()

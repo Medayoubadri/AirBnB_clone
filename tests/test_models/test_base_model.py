@@ -12,8 +12,9 @@ import os
 import models
 import json
 
+
 class TestBaseModel(unittest.TestCase):
-    
+    """Test cases for the BaseModel class."""
     def setUp(self):
         """Sets up a new instance of BaseModel before each test."""
         self.model = BaseModel()
@@ -62,17 +63,23 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(model_dict, dict)
         self.assertEqual(model_dict["__class__"], "BaseModel")
         self.assertEqual(model_dict["id"], self.model.id)
-        self.assertEqual(model_dict["created_at"], self.model.created_at.isoformat())
-        self.assertEqual(model_dict["updated_at"], self.model.updated_at.isoformat())
+        self.assertEqual(
+            model_dict["created_at"], self.model.created_at.isoformat())
+        self.assertEqual(
+            model_dict["updated_at"], self.model.updated_at.isoformat())
 
     def test_to_dict_contains_all_keys(self):
-        """Test that to_dict contains all keys in the __dict__ of the instance."""
+        """
+        Test that to_dict contains all keys in the __dict__ of the instance.
+        """
         model_dict = self.model.to_dict()
         for key in self.model.__dict__:
             self.assertIn(key, model_dict)
 
     def test_kwargs_initialization(self):
-        """Test that an instance can be created from a dictionary of attributes."""
+        """
+        Test that an instance can be created from a dictionary of attributes.
+        """
         model_dict = self.model.to_dict()
         new_model = BaseModel(**model_dict)
         self.assertEqual(new_model.id, self.model.id)
@@ -100,7 +107,9 @@ class TestBaseModel(unittest.TestCase):
         self.assertIn(key, models.storage.all())
 
     def test_to_dict_has_correct_types(self):
-        """Test that to_dict method outputs ISO format strings for datetimes."""
+        """
+        Test that to_dict method outputs ISO format strings for datetimes.
+        """
         model_dict = self.model.to_dict()
         self.assertIsInstance(model_dict["created_at"], str)
         self.assertIsInstance(model_dict["updated_at"], str)
@@ -111,8 +120,11 @@ class TestBaseModel(unittest.TestCase):
         self.model.name = "Test Name"
         self.model.save()
         models.storage.reload()
-        reloaded_instance = models.storage.all().get(f"BaseModel.{self.model.id}")
+        reloaded_instance = models.storage.all().get(
+            f"BaseModel.{self.model.id}"
+            )
         self.assertEqual(reloaded_instance.name, "Test Name")
+
 
 if __name__ == '__main__':
     unittest.main()
