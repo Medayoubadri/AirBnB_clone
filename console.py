@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-
 """Console module for HBNB project"""
-
 import cmd
 import re
 import shlex
