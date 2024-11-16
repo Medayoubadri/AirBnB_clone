@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 Unit tests for the User class with a structured and comprehensive approach.
 """
