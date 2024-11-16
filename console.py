@@ -154,75 +154,75 @@ class HBNBCommand(cmd.Cmd):
         args_str = args_str[:-1]
         return class_name, method_name, args_str
 
-    def do_count(self, class_name):
-        """Counts the number of instances of a class"""
-        count = sum(
-            1 for key in storage.all() if key.startswith(f"{class_name}.")
-        )
-        print(count)
+    # def do_count(self, class_name):
+    #     """Counts the number of instances of a class"""
+    #     count = sum(
+    #         1 for key in storage.all() if key.startswith(f"{class_name}.")
+    #     )
+    #     print(count)
 
-    def handle_update(self, class_name, args_str):
-        """Handles the update command from default method"""
-        args_str = args_str.strip().strip("'\"")
+    # def handle_update(self, class_name, args_str):
+    #     """Handles the update command from default method"""
+    #     args_str = args_str.strip().strip("'\"")
 
-        try:
-            start = args_str.index('{')
-            end = args_str.rindex('}')
+    #     try:
+    #         start = args_str.index('{')
+    #         end = args_str.rindex('}')
 
-            instance_id = args_str[:start].strip().strip(',').strip("'\"")
-            dict_str = args_str[start:end+1]
+    #         instance_id = args_str[:start].strip().strip(',').strip("'\"")
+    #         dict_str = args_str[start:end+1]
 
-            update_dict = ast.literal_eval(dict_str)
+    #         update_dict = ast.literal_eval(dict_str)
 
-            if isinstance(update_dict, dict):
-                for key, value in update_dict.items():
-                    self.do_update(
-                        f"{class_name} {instance_id} {key} {json.dumps(value)}"
-                        )
-            else:
-                raise ValueError("Invalid dictionary format")
+    #         if isinstance(update_dict, dict):
+    #             for key, value in update_dict.items():
+    #                 self.do_update(
+    #                     f"{class_name} {instance_id} {key} {json.dumps(value)}"
+    #                     )
+    #         else:
+    #             raise ValueError("Invalid dictionary format")
 
-        except (ValueError, SyntaxError):
-            args = shlex.split(args_str)
-            if len(args) >= 3:
-                instance_id = args[0]
-                attr_name = args[1]
-                attr_value = args[2]
-                self.do_update(
-                    f"{class_name} {instance_id} {attr_name} {attr_value}"
-                    )
-            else:
-                print("** attribute name missing **")
+    #     except (ValueError, SyntaxError):
+    #         args = shlex.split(args_str)
+    #         if len(args) >= 3:
+    #             instance_id = args[0]
+    #             attr_name = args[1]
+    #             attr_value = args[2]
+    #             self.do_update(
+    #                 f"{class_name} {instance_id} {attr_name} {attr_value}"
+    #                 )
+    #         else:
+    #             print("** attribute name missing **")
 
-    def default(self, arg):
-        """Handle class-specific commands"""
-        class_name, method_name, args_str = self.dic_parser(arg)
-        if class_name is None:
-            print(f"*** Unknown syntax: {arg}")
-            return
+    # def default(self, arg):
+    #     """Handle class-specific commands"""
+    #     class_name, method_name, args_str = self.dic_parser(arg)
+    #     if class_name is None:
+    #         print(f"*** Unknown syntax: {arg}")
+    #         return
 
-        if class_name not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
+    #     if class_name not in HBNBCommand.classes:
+    #         print("** class doesn't exist **")
+    #         return
 
-        method_dispatch = {
-            'all': self.do_all,
-            'count': self.do_count,
-            'show': self.do_show,
-            'destroy': self.do_destroy,
-        }
+    #     method_dispatch = {
+    #         'all': self.do_all,
+    #         'count': self.do_count,
+    #         'show': self.do_show,
+    #         'destroy': self.do_destroy,
+    #     }
 
-        if method_name in method_dispatch:
-            method = method_dispatch[method_name]
-            if method_name == 'count':
-                method(class_name)
-            else:
-                args = f"{class_name} {args_str.strip('\"')}"
-                method(args)
-        elif method_name == 'update':
-            self.handle_update(class_name, args_str)
-        else:
-            print(f"*** Unknown syntax: {arg}")
+    #     if method_name in method_dispatch:
+    #         method = method_dispatch[method_name]
+    #         if method_name == 'count':
+    #             method(class_name)
+    #         else:
+    #             args = f"{class_name} {args_str.strip('\"')}"
+    #             method(args)
+    #     elif method_name == 'update':
+    #         self.handle_update(class_name, args_str)
+    #     else:
+    #         print(f"*** Unknown syntax: {arg}")
 
 
 if __name__ == '__main__':
