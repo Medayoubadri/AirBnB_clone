@@ -9,7 +9,16 @@ from datetime import datetime
 
 
 class BaseModel:
-    """BaseModel defines all common attributes/methods for other classes."""
+    """
+    BaseModel defines all common attributes methods for other classes.
+    ATTRIBUTES:
+        - id: string - unique identifier
+        - created_at: datetime - creation date
+        - updated_at: datetime - update date
+        __str__: returns a string representation of the instance
+        save: updates the public instance attribute updated_at
+        to_dict: returns a dictionary representation of a BaseModel instance
+    """
 
     def __init__(self, *args, **kwargs):
         """Initializes a new instance of BaseModel."""
