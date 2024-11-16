@@ -146,7 +146,8 @@ class TestBaseModel(unittest.TestCase):
         with open("file.json", "r") as f:
             content = json.load(f)
         self.assertIn(f"BaseModel.{self.model.id}", content)
-        self.assertEqual(content[f"BaseModel.{self.model.id}"]["name"], "Updated Name")
+        self.assertEqual(
+            content[f"BaseModel.{self.model.id}"]["name"], "Updated Name")
         self.assertGreater(self.model.updated_at, old_updated_at)
 
     def test_to_dict_with_additional_attributes(self):
@@ -160,7 +161,9 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(model_dict["number"], 42)
 
     def test_reload_with_multiple_instances(self):
-        """Test that reload properly restores multiple instances from file.json."""
+        """
+        Test that reload properly restores multiple instances from file.json.
+        """
         model1 = BaseModel()
         model1.name = "Model 1"
         model1.save()
@@ -170,8 +173,10 @@ class TestBaseModel(unittest.TestCase):
         models.storage.reload()
         self.assertIn(f"BaseModel.{model1.id}", models.storage.all())
         self.assertIn(f"BaseModel.{model2.id}", models.storage.all())
-        self.assertEqual(models.storage.all()[f"BaseModel.{model1.id}"].name, "Model 1")
-        self.assertEqual(models.storage.all()[f"BaseModel.{model2.id}"].name, "Model 2")
+        self.assertEqual(
+            models.storage.all()[f"BaseModel.{model1.id}"].name, "Model 1")
+        self.assertEqual(
+            models.storage.all()[f"BaseModel.{model2.id}"].name, "Model 2")
 
 
 if __name__ == '__main__':
