@@ -56,39 +56,39 @@ class TestAmenityCreation(unittest.TestCase):
 
     def test_amenity_name_attribute(self):
         """Test that Amenity has name attribute."""
-        am = Amenity()
+        amenity = Amenity()
         self.assertEqual(str, type(Amenity.name))
         self.assertIn("name", dir(Amenity()))
-        self.assertNotIn("name", am.__dict__)
+        self.assertNotIn("name", amenity.__dict__)
 
     def test_unique_amenity_ids(self):
         """Test that two amenities have different ids."""
-        am1 = Amenity()
-        am2 = Amenity()
-        self.assertNotEqual(am1.id, am2.id)
+        amenity1 = Amenity()
+        amenity2 = Amenity()
+        self.assertNotEqual(amenity1.id, amenity2.id)
 
     def test_different_created_at(self):
         """Test that two amenities have different created_at times."""
-        am1 = Amenity()
+        amenity1 = Amenity()
         sleep(0.05)
-        am2 = Amenity()
-        self.assertLess(am1.created_at, am2.created_at)
+        amenity2 = Amenity()
+        self.assertLess(amenity1.created_at, amenity2.created_at)
 
     def test_different_updated_at(self):
         """Test that two amenities have different updated_at times."""
-        am1 = Amenity()
+        amenity1 = Amenity()
         sleep(0.05)
-        am2 = Amenity()
-        self.assertLess(am1.updated_at, am2.updated_at)
+        amenity2 = Amenity()
+        self.assertLess(amenity1.updated_at, amenity2.updated_at)
 
     def test_string_representation(self):
         """Test the string representation of Amenity."""
         dt = datetime.today()
         dt_repr = repr(dt)
-        am = Amenity()
-        am.id = "123abc"
-        am.created_at = am.updated_at = dt
-        amstr = str(am)
+        amenity = Amenity()
+        amenity.id = "123abc"
+        amenity.created_at = amenity.updated_at = dt
+        amstr = str(amenity)
         self.assertIn("[Amenity] (123abc)", amstr)
         self.assertIn("'id': '123abc'", amstr)
         self.assertIn("'created_at': " + dt_repr, amstr)
@@ -96,17 +96,17 @@ class TestAmenityCreation(unittest.TestCase):
 
     def test_unused_args(self):
         """Test that unused args don't add attributes."""
-        am = Amenity(None)
-        self.assertNotIn(None, am.__dict__.values())
+        amenity = Amenity(None)
+        self.assertNotIn(None, amenity.__dict__.values())
 
     def test_instantiation_with_kwargs(self):
         """Test instantiation with kwargs."""
         dt = datetime.today()
         dt_iso = dt.isoformat()
-        am = Amenity(id="123abc", created_at=dt_iso, updated_at=dt_iso)
-        self.assertEqual(am.id, "123abc")
-        self.assertEqual(am.created_at, dt)
-        self.assertEqual(am.updated_at, dt)
+        amenity = Amenity(id="123abc", created_at=dt_iso, updated_at=dt_iso)
+        self.assertEqual(amenity.id, "123abc")
+        self.assertEqual(amenity.created_at, dt)
+        self.assertEqual(amenity.updated_at, dt)
 
     def test_instantiation_with_None_kwargs(self):
         """Test that None kwargs raise a TypeError."""
@@ -147,9 +147,9 @@ class TestAmenitySave(unittest.TestCase):
     def test_save_updates_file(self):
         """Test that save method updates file."""
         self.amenity.save()
-        amid = "Amenity." + self.amenity.id
+        amenity_id = "Amenity." + self.amenity.id
         with open("file.json", "r") as f:
-            self.assertIn(amid, f.read())
+            self.assertIn(amenity_id, f.read())
 
 
 class TestAmenityToDict(unittest.TestCase):
@@ -165,11 +165,11 @@ class TestAmenityToDict(unittest.TestCase):
 
     def test_to_dict_contains_correct_keys(self):
         """Test that to_dict contains the correct keys."""
-        am_dict = self.amenity.to_dict()
-        self.assertIn("id", am_dict)
-        self.assertIn("created_at", am_dict)
-        self.assertIn("updated_at", am_dict)
-        self.assertIn("__class__", am_dict)
+        amenity_dict = self.amenity.to_dict()
+        self.assertIn("id", amenity_dict)
+        self.assertIn("created_at", amenity_dict)
+        self.assertIn("updated_at", amenity_dict)
+        self.assertIn("__class__", amenity_dict)
 
     def test_to_dict_contains_added_attributes(self):
         """Test that to_dict includes added attributes."""
@@ -180,10 +180,10 @@ class TestAmenityToDict(unittest.TestCase):
 
     def test_to_dict_datetime_attributes_are_strs(self):
         """Test that to_dict datetime attributes are strings."""
-        am_dict = self.amenity.to_dict()
-        self.assertEqual(str, type(am_dict["id"]))
-        self.assertEqual(str, type(am_dict["created_at"]))
-        self.assertEqual(str, type(am_dict["updated_at"]))
+        amenity_dict = self.amenity.to_dict()
+        self.assertEqual(str, type(amenity_dict["id"]))
+        self.assertEqual(str, type(amenity_dict["created_at"]))
+        self.assertEqual(str, type(amenity_dict["updated_at"]))
 
     def test_to_dict_output(self):
         """Test the output of to_dict method."""
