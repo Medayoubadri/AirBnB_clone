@@ -356,11 +356,12 @@ class TestHBNBCommandDestroy(unittest.TestCase):
                     f"{cls}.destroy({obj_id})"))
             self.assertNotIn(f"{cls}.{obj_id}", storage.all())
 
-class TestHBNBCommand_all(unittest.TestCase):
-    """Unittests for testing all of the HBNB command interpreter."""
+class TestHBNBCommandAll(unittest.TestCase):
+    """Unittests for testing 'all' command of the HBNB command interpreter."""
 
     @classmethod
-    def setUp(self):
+    def setUpClass(cls):
+        """Set up the environment before each test."""
         try:
             os.rename("file.json", "tmp")
         except IOError:
@@ -368,7 +369,8 @@ class TestHBNBCommand_all(unittest.TestCase):
         FileStorage.__objects = {}
 
     @classmethod
-    def tearDown(self):
+    def tearDownClass(cls):
+        """Clean up the environment after each test."""
         try:
             os.remove("file.json")
         except IOError:
@@ -378,116 +380,103 @@ class TestHBNBCommand_all(unittest.TestCase):
         except IOError:
             pass
 
+    def _create_test_objects(self):
+        """Helper method to create objects for all classes."""
+        classes = [
+            "BaseModel", "User", "State", "City", "Amenity", "Place", "Review"
+        ]
+        for cls in classes:
+            with patch("sys.stdout", new=StringIO()):
+                self.assertFalse(HBNBCommand().onecmd(f"create {cls}"))
+
     def test_all_invalid_class(self):
+        """Test 'all' with an invalid class name."""
         correct = "** class doesn't exist **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("all MyModel"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_all_objects_space_notation(self):
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
-            self.assertFalse(HBNBCommand().onecmd("create User"))
-            self.assertFalse(HBNBCommand().onecmd("create State"))
-            self.assertFalse(HBNBCommand().onecmd("create Place"))
-            self.assertFalse(HBNBCommand().onecmd("create City"))
-            self.assertFalse(HBNBCommand().onecmd("create Amenity"))
-            self.assertFalse(HBNBCommand().onecmd("create Review"))
+        """Test 'all' with all objects using space notation."""
+        self._create_test_objects()
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("all"))
-            self.assertIn("BaseModel", output.getvalue().strip())
-            self.assertIn("User", output.getvalue().strip())
-            self.assertIn("State", output.getvalue().strip())
-            self.assertIn("Place", output.getvalue().strip())
-            self.assertIn("City", output.getvalue().strip())
-            self.assertIn("Amenity", output.getvalue().strip())
-            self.assertIn("Review", output.getvalue().strip())
+            output_value = output.getvalue().strip()
+            self.assertIn("BaseModel", output_value)
+            self.assertIn("User", output_value)
+            self.assertIn("State", output_value)
+            self.assertIn("Place", output_value)
+            self.assertIn("City", output_value)
+            self.assertIn("Amenity", output_value)
+            self.assertIn("Review", output_value)
 
     def test_all_objects_dot_notation(self):
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
-            self.assertFalse(HBNBCommand().onecmd("create User"))
-            self.assertFalse(HBNBCommand().onecmd("create State"))
-            self.assertFalse(HBNBCommand().onecmd("create Place"))
-            self.assertFalse(HBNBCommand().onecmd("create City"))
-            self.assertFalse(HBNBCommand().onecmd("create Amenity"))
-            self.assertFalse(HBNBCommand().onecmd("create Review"))
+        """Test 'all' with objects using dot notation."""
+        self._create_test_objects()
+        for cls in [
+                "BaseModel",
+                "User",
+                "State",
+                "City",
+                "Amenity",
+                "Place",
+                "Review"]:
+            with patch("sys.stdout", new=StringIO()) as output:
+                self.assertFalse(HBNBCommand().onecmd(f"{cls}.all()"))
+                output_value = output.getvalue().strip()
+                self.assertIn(cls, output_value)
 
     def test_all_single_object_space_notation(self):
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
-            self.assertFalse(HBNBCommand().onecmd("create User"))
-            self.assertFalse(HBNBCommand().onecmd("create State"))
-            self.assertFalse(HBNBCommand().onecmd("create Place"))
-            self.assertFalse(HBNBCommand().onecmd("create City"))
-            self.assertFalse(HBNBCommand().onecmd("create Amenity"))
-            self.assertFalse(HBNBCommand().onecmd("create Review"))
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all BaseModel"))
-            self.assertIn("BaseModel", output.getvalue().strip())
-            self.assertNotIn("User", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all User"))
-            self.assertIn("User", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all State"))
-            self.assertIn("State", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all City"))
-            self.assertIn("City", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all Amenity"))
-            self.assertIn("Amenity", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all Place"))
-            self.assertIn("Place", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("all Review"))
-            self.assertIn("Review", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
+        """Test 'all' for a single class using space notation."""
+        self._create_test_objects()
+        for cls in [
+                "BaseModel",
+                "User",
+                "State",
+                "City",
+                "Amenity",
+                "Place",
+                "Review"]:
+            with patch("sys.stdout", new=StringIO()) as output:
+                self.assertFalse(HBNBCommand().onecmd(f"all {cls}"))
+                output_value = output.getvalue().strip()
+                self.assertIn(cls, output_value)
+                for other_cls in [
+                        "BaseModel",
+                        "User",
+                        "State",
+                        "City",
+                        "Amenity",
+                        "Place",
+                        "Review"]:
+                    if other_cls != cls:
+                        self.assertNotIn(other_cls, output_value)
 
     def test_all_single_object_dot_notation(self):
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
-            self.assertFalse(HBNBCommand().onecmd("create User"))
-            self.assertFalse(HBNBCommand().onecmd("create State"))
-            self.assertFalse(HBNBCommand().onecmd("create Place"))
-            self.assertFalse(HBNBCommand().onecmd("create City"))
-            self.assertFalse(HBNBCommand().onecmd("create Amenity"))
-            self.assertFalse(HBNBCommand().onecmd("create Review"))
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("BaseModel.all()"))
-            self.assertIn("BaseModel", output.getvalue().strip())
-            self.assertNotIn("User", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("User.all()"))
-            self.assertIn("User", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("State.all()"))
-            self.assertIn("State", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("City.all()"))
-            self.assertIn("City", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("Amenity.all()"))
-            self.assertIn("Amenity", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("Place.all()"))
-            self.assertIn("Place", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("Review.all()"))
-            self.assertIn("Review", output.getvalue().strip())
-            self.assertNotIn("BaseModel", output.getvalue().strip())
+        """Test 'all' for a single class using dot notation."""
+        self._create_test_objects()
+        for cls in [
+                "BaseModel",
+                "User",
+                "State",
+                "City",
+                "Amenity",
+                "Place",
+                "Review"]:
+            with patch("sys.stdout", new=StringIO()) as output:
+                self.assertFalse(HBNBCommand().onecmd(f"{cls}.all()"))
+                output_value = output.getvalue().strip()
+                self.assertIn(cls, output_value)
+                for other_cls in [
+                        "BaseModel",
+                        "User",
+                        "State",
+                        "City",
+                        "Amenity",
+                        "Place",
+                        "Review"]:
+                    if other_cls != cls:
+                        self.assertNotIn(other_cls, output_value)
 
 
 class TestHBNBCommand_update(unittest.TestCase):
