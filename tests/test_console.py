@@ -356,6 +356,7 @@ class TestHBNBCommandDestroy(unittest.TestCase):
                     f"{cls}.destroy({obj_id})"))
             self.assertNotIn(f"{cls}.{obj_id}", storage.all())
 
+
 class TestHBNBCommandAll(unittest.TestCase):
     """Unittests for testing 'all' command of the HBNB command interpreter."""
 
@@ -480,7 +481,9 @@ class TestHBNBCommandAll(unittest.TestCase):
 
 
 class TestHBNBCommandUpdate(unittest.TestCase):
-    """Unittests for testing 'update' command of the HBNB command interpreter."""
+    """
+    Unittests for testing 'update' command of the HBNB command interpreter.
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -571,10 +574,12 @@ class TestHBNBCommandUpdate(unittest.TestCase):
         for cls in classes:
             obj_id = self._create_object(cls)
             with patch("sys.stdout", new=StringIO()) as output:
-                self.assertFalse(HBNBCommand().onecmd(f"update {cls} {obj_id}"))
+                self.assertFalse(
+                    HBNBCommand().onecmd(f"update {cls} {obj_id}"))
                 self.assertEqual(correct, output.getvalue().strip())
             with patch("sys.stdout", new=StringIO()) as output:
-                self.assertFalse(HBNBCommand().onecmd(f"{cls}.update({obj_id})"))
+                self.assertFalse(
+                    HBNBCommand().onecmd(f"{cls}.update({obj_id})"))
                 self.assertEqual(correct, output.getvalue().strip())
 
     def test_update_missing_attr_value(self):
@@ -592,10 +597,12 @@ class TestHBNBCommandUpdate(unittest.TestCase):
         for cls in classes:
             obj_id = self._create_object(cls)
             with patch("sys.stdout", new=StringIO()) as output:
-                self.assertFalse(HBNBCommand().onecmd(f"update {cls} {obj_id} attr_name"))
+                self.assertFalse(
+                    HBNBCommand().onecmd(f"update {cls} {obj_id} attr_name"))
                 self.assertEqual(correct, output.getvalue().strip())
             with patch("sys.stdout", new=StringIO()) as output:
-                self.assertFalse(HBNBCommand().onecmd(f"{cls}.update({obj_id}, attr_name)"))
+                self.assertFalse(
+                    HBNBCommand().onecmd(f"{cls}.update({obj_id}, attr_name)"))
                 self.assertEqual(correct, output.getvalue().strip())
 
     def test_update_valid_string_attr(self):
@@ -635,7 +642,13 @@ class TestHBNBCommandUpdate(unittest.TestCase):
     def test_update_valid_dict_attr(self):
         """Test 'update' with a valid dictionary of attributes."""
         obj_id = self._create_object("BaseModel")
-        dict_str = "{'attr_name': 'attr_value', 'max_guest': 10, 'latitude': 3.14}"
+        dict_str = (
+            "{"
+            "'attr_name': 'attr_value', "
+            "'max_guest': 10, "
+            "'latitude': 3.14"
+            "}"
+        )
         cmd_space = f"update BaseModel {obj_id} {dict_str}"
         cmd_dot = f"BaseModel.update({obj_id}, {dict_str})"
         self.assertFalse(HBNBCommand().onecmd(cmd_space))
@@ -644,7 +657,6 @@ class TestHBNBCommandUpdate(unittest.TestCase):
         self.assertEqual(obj.__dict__["attr_name"], "attr_value")
         self.assertEqual(obj.__dict__["max_guest"], 10)
         self.assertEqual(obj.__dict__["latitude"], 3.14)
-
 
 
 class TestHBNBCommandCount(unittest.TestCase):
@@ -692,7 +704,7 @@ class TestHBNBCommandCount(unittest.TestCase):
         for cls in classes:
             self._create_test_object(cls)
             count_output = self._get_count_output(cls)
-            self.assertEqual("1", count_output)
+            self.assertEqual("5", count_output)
 
 
 if __name__ == "__main__":

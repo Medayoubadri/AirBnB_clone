@@ -79,7 +79,8 @@ class TestBaseModelInstantiation(unittest.TestCase):
     def test_instantiation_with_args_and_kwargs(self):
         dt = datetime.today()
         dt_iso = dt.isoformat()
-        base_model = BaseModel("12", id="6789", created_at=dt_iso, updated_at=dt_iso)
+        base_model = BaseModel(
+            "12", id="6789", created_at=dt_iso, updated_at=dt_iso)
         self.assertEqual(base_model.id, "6789")
         self.assertEqual(base_model.created_at, dt)
         self.assertEqual(base_model.updated_at, dt)
@@ -178,7 +179,8 @@ class TestBaseModelSave(unittest.TestCase):
         with open("file.json", "r") as f:
             content = json.load(f)
         self.assertIn(f"BaseModel.{base_model.id}", content)
-        self.assertEqual(content[f"BaseModel.{base_model.id}"]["name"], "Updated Name")
+        self.assertEqual(
+            content[f"BaseModel.{base_model.id}"]["name"], "Updated Name")
         self.assertGreater(base_model.updated_at, old_updated_at)
 
 

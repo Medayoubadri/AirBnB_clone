@@ -148,7 +148,9 @@ class TestReviewToDict(unittest.TestCase):
         self.assertIn("__class__", review_dict)
 
     def test_to_dict_datetime_attributes_are_strs(self):
-        """Test that datetime attributes are converted to strings in to_dict()."""
+        """
+        Test that datetime attributes are converted to strings in to_dict().
+        """
         review_dict = self.review.to_dict()
         self.assertEqual(str, type(review_dict["created_at"]))
         self.assertEqual(str, type(review_dict["updated_at"]))

@@ -157,7 +157,8 @@ class TestPlaceInstantiation(unittest.TestCase):
         self.assertEqual(place.city_id, "1234")
         self.assertEqual(place.user_id, "5678")
         self.assertEqual(place.name, "YO MAMA's BEACH HOUSE")
-        self.assertEqual(place.description, "Big house Too expensive for you anyway.")
+        self.assertEqual(
+            place.description, "Big house Too expensive for you anyway.")
         self.assertEqual(place.number_rooms, 3)
         self.assertEqual(place.number_bathrooms, 2)
         self.assertEqual(place.max_guest, 6)
