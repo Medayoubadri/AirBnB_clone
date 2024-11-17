@@ -12,27 +12,49 @@ from io import StringIO
 from unittest.mock import patch
 
 
-class TestHBNBCommand_prompting(unittest.TestCase):
-    """Unittests for testing prompting of the HBNB command interpreter."""
+class TestHBNBCommandPrompting(unittest.TestCase):
+    """Unittests for the HBNB command interpreter's prompting behavior."""
 
     def test_prompt_string(self):
+        """Test if the command prompt string is correct."""
         self.assertEqual("(hbnb) ", HBNBCommand.prompt)
 
     def test_empty_line(self):
+        """Test if empty line input does nothing."""
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd(""))
             self.assertEqual("", output.getvalue().strip())
 
+    def test_whitespace_only_input(self):
+        """Test if whitespace-only input behaves like an empty line."""
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("    "))
+            self.assertEqual("", output.getvalue().strip())
 
-class TestHBNBCommand_help(unittest.TestCase):
-    """Unittests for testing help messages of the HBNB command interpreter."""
+
+class TestHBNBCommandHelp(unittest.TestCase):
+    """
+    Unittests for testing help messages of the HBNB command interpreter.
+    """
 
     def test_help(self):
-        h = ("Documented commands (type help <topic>):\n"
-             "========================================\n"
-             "EOF  all  count  create  destroy  help  quit  show  update")
+        """
+        Test if the general help command displays the correct help message.
+        """
+        h = (
+            "Documented commands (type help <topic>):\n"
+            "========================================\n"
+            "EOF  all  count  create  destroy  help  quit  show  update"
+        )
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("help"))
+            self.assertEqual(h, output.getvalue().strip())
+
+    def test_help_quit(self):
+        """Test if the help message for the 'quit' command is correct."""
+        h = "Quit command to exit the program"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("help quit"))
             self.assertEqual(h, output.getvalue().strip())
 
 
