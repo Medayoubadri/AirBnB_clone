@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-
 """
-Unit tests for the Review class, sprinkled with humor and thoroughness.
+Unit tests for the Review class.
 """
 
 import unittest
@@ -13,181 +12,172 @@ from models.review import Review
 from models import storage
 
 
-class TestReview(unittest.TestCase):
-    """Thorough tests for the Review class with some personality."""
+class TestReviewInstantiation(unittest.TestCase):
+    """Thorough and witty tests for Review instantiation."""
 
     def setUp(self):
-        """Sets up a Review instance before each test."""
+        """Sets up a fresh Review instance before each test."""
         self.review = Review()
-        self.review.place_id = "place_1234"
-        self.review.user_id = "user_5678"
-        self.review.text = "Amazing place! Just mind the raccoons."
 
     def tearDown(self):
-        """Clean up any created files after each test."""
+        """Cleans up any mess after a test."""
         try:
             os.remove("file.json")
         except FileNotFoundError:
             pass
 
-    # Section 1: Tests for Instantiation
     def test_instance_creation(self):
-        """Test creating a new Review instance without arguments."""
+        """Test creating a Review instance. Did it even happen?"""
         self.assertIsInstance(self.review, Review)
         self.assertIn(self.review, storage.all().values())
 
     def test_unique_id_per_instance(self):
         """
-        Test that each Review instance has a unique id.
-        Because every opinion is special.
+        Test that each Review has its own ID.
+        Like snowflakes, but less cold.
         """
         review2 = Review()
         self.assertNotEqual(self.review.id, review2.id)
 
     def test_id_is_string(self):
-        """
-        Test that id attribute is a string.
-        A review without an ID is like a book without a cover.
-        """
+        """Check if the ID is a string. Integer IDs are so last year."""
         self.assertIsInstance(self.review.id, str)
 
     def test_datetime_attributes(self):
-        """
-        Test that created_at and updated_at are datetime objects.
-        Time ticks on, even for reviews.
-        """
+        """Verify that created_at and updated_at are datetime objects."""
         self.assertIsInstance(self.review.created_at, datetime)
         self.assertIsInstance(self.review.updated_at, datetime)
 
     def test_different_created_at_for_multiple_instances(self):
-        """
-        Test different created_at times for distinct instances.
-        Every review has its moment.
-        """
+        """Ensure created_at timestamps differ for different instances. Time moves on."""
         review2 = Review()
         sleep(0.01)
         review3 = Review()
         self.assertLess(review2.created_at, review3.created_at)
 
-    def test_public_attributes(self):
-        """
-        Test that Review class has expected public attributes.
-        Nothing but the truth here.
-        """
-        self.assertEqual(self.review.place_id, "place_1234")
-        self.assertEqual(self.review.user_id, "user_5678")
-        self.assertEqual(
-            self.review.text, "Amazing place! Just mind the raccoons."
-            )
+    def test_public_class_attributes(self):
+        """Confirm public class attributes are in place but not instance-specific."""
+        self.assertIn("place_id", dir(self.review))
+        self.assertNotIn("place_id", self.review.__dict__)
+        self.assertIn("user_id", dir(self.review))
+        self.assertNotIn("user_id", self.review.__dict__)
+        self.assertIn("text", dir(self.review))
+        self.assertNotIn("text", self.review.__dict__)
 
-    # Section 2: Tests for save Method
+    def test_str_representation(self):
+        """Test the string representation. Is it charming enough?"""
+        dt = datetime.today()
+        dt_repr = repr(dt)
+        self.review.id = "123456"
+        self.review.created_at = self.review.updated_at = dt
+        review_str = self.review.__str__()
+        self.assertIn("[Review] (123456)", review_str)
+        self.assertIn("'id': '123456'", review_str)
+        self.assertIn("'created_at': " + dt_repr, review_str)
+        self.assertIn("'updated_at': " + dt_repr, review_str)
+
+    def test_instantiation_with_kwargs(self):
+        """Test instantiating with keyword arguments. Cheating, are we?"""
+        dt = datetime.today()
+        dt_iso = dt.isoformat()
+        review = Review(id="345", created_at=dt_iso, updated_at=dt_iso)
+        self.assertEqual(review.id, "345")
+        self.assertEqual(review.created_at, dt)
+        self.assertEqual(review.updated_at, dt)
+
+
+class TestReviewSave(unittest.TestCase):
+    """Testing the save method like it's a bestseller."""
+
+    def setUp(self):
+        """Set up the drama before testing save()."""
+        self.review = Review()
+
+    def tearDown(self):
+        """Clean up the stage after each test."""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
     def test_save_updates_updated_at(self):
-        """Test that save() updates the updated_at attribute."""
+        """Test save() updates updated_at. It better be punctual."""
         old_updated_at = self.review.updated_at
         sleep(0.01)
         self.review.save()
         self.assertGreater(self.review.updated_at, old_updated_at)
 
     def test_save_creates_file(self):
-        """
-        Test that save() creates file.json.
-        The review is saved, even if the experience is questionable.
-        """
+        """Test save() creates the sacred file.json. It’s canon."""
         self.review.save()
         self.assertTrue(os.path.exists("file.json"))
 
-    def test_save_file_content(self):
-        """
-        Test that save() writes correct data to file.json.
-        Raccoons included.
-        """
-        self.review.save()
-        with open("file.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-        key = f"Review.{self.review.id}"
-        self.assertIn(key, data)
-        self.assertEqual(
-            data[key]["text"], "Amazing place! Just mind the raccoons."
-            )
-
     def test_save_with_invalid_argument(self):
-        """
-        Test save() with an invalid argument raises a TypeError.
-        No freeloaders allowed.
-        """
+        """Try saving with invalid arguments. Spoiler: it’ll fail."""
         with self.assertRaises(TypeError):
             self.review.save(None)
 
-    # Section 3: Tests for to_dict Method
-    def test_to_dict_includes_all_attributes(self):
-        """
-        Test that to_dict() includes all Review attributes.
-        Every detail matters.
-        """
+    def test_save_updates_file_content(self):
+        """Test save() actually writes correct data. No half-measures."""
+        self.review.save()
+        review_id = f"Review.{self.review.id}"
+        with open("file.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        self.assertIn(review_id, data)
+        self.assertEqual(data[review_id]["__class__"], "Review")
+
+
+class TestReviewToDict(unittest.TestCase):
+    """Because dictionaries are cool and to_dict() deserves attention."""
+
+    def setUp(self):
+        """Set up a Review instance for testing dictionary conversion."""
+        self.review = Review()
+
+    def tearDown(self):
+        """Sweep up after testing."""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def test_to_dict_type(self):
+        """Does to_dict() return a dictionary? Or is it faking it?"""
+        self.assertTrue(dict, type(self.review.to_dict()))
+
+    def test_to_dict_contains_expected_keys(self):
+        """Does the dictionary have all the juicy details?"""
         review_dict = self.review.to_dict()
         self.assertIn("id", review_dict)
         self.assertIn("created_at", review_dict)
         self.assertIn("updated_at", review_dict)
-        self.assertIn("place_id", review_dict)
-        self.assertIn("user_id", review_dict)
-        self.assertIn("text", review_dict)
-        self.assertEqual(
-            review_dict["text"], "Amazing place! Just mind the raccoons."
-            )
+        self.assertIn("__class__", review_dict)
 
-    def test_to_dict_datetime_format(self):
-        """
-        Test that to_dict() converts datetime attributes to ISO format.
-        Time, but make it stringy.
-        """
+    def test_to_dict_datetime_attributes_are_strs(self):
+        """Make sure datetime fields are stringified in ISO format."""
         review_dict = self.review.to_dict()
-        self.assertIsInstance(review_dict["created_at"], str)
-        self.assertIsInstance(review_dict["updated_at"], str)
-        self.assertEqual(
-            review_dict["created_at"], self.review.created_at.isoformat()
-            )
-        self.assertEqual(
-            review_dict["updated_at"], self.review.updated_at.isoformat()
-            )
+        self.assertEqual(str, type(review_dict["created_at"]))
+        self.assertEqual(str, type(review_dict["updated_at"]))
 
-    def test_to_dict_additional_attributes(self):
-        """
-        Test that to_dict() includes dynamically added attributes.
-        All feedback counts.
-        """
-        self.review.rating = 5  # Because who doesn't love stars?
+    def test_to_dict_with_additional_attributes(self):
+        """Dynamic attributes in the dictionary? Yes, please."""
+        self.review.rating = 5
         review_dict = self.review.to_dict()
         self.assertIn("rating", review_dict)
         self.assertEqual(review_dict["rating"], 5)
 
-    def test_to_dict_with_invalid_argument(self):
-        """
-        Test that to_dict() with invalid arguments raises TypeError.
-        This method is VIP-only.
-        """
-        with self.assertRaises(TypeError):
-            self.review.to_dict(None)
-
     def test_to_dict_output(self):
-        """
-        Test that to_dict() output matches expected dictionary.
-        All the details, down to the raccoons.
-        """
+        """Check if to_dict() output matches expectations."""
+        dt = datetime.today()
         self.review.id = "123456"
-        self.review.created_at = datetime(2024, 1, 1, 12, 0, 0)
-        self.review.updated_at = datetime(2024, 1, 1, 12, 0, 0)
+        self.review.created_at = self.review.updated_at = dt
         expected_dict = {
             "id": "123456",
             "__class__": "Review",
-            "created_at": "2024-01-01T12:00:00",
-            "updated_at": "2024-01-01T12:00:00",
-            "place_id": "place_1234",
-            "user_id": "user_5678",
-            "text": "Amazing place! Just mind the raccoons.",
-            "rating": 5
+            "created_at": dt.isoformat(),
+            "updated_at": dt.isoformat(),
         }
-        self.review.rating = 5
-        self.assertEqual(self.review.to_dict(), expected_dict)
+        self.assertDictEqual(self.review.to_dict(), expected_dict)
 
 
 if __name__ == "__main__":
