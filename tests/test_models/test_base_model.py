@@ -244,7 +244,7 @@ class TestBaseModelToDict(unittest.TestCase):
         """Test that to_dict method includes additional attributes."""
         base_model = BaseModel()
         base_model.name = "Jhon Wick"
-        base_model.number = 52
+        base_model.age = 52
         model_dict = base_model.to_dict()
         self.assertIn("name", model_dict)
         self.assertIn("age", model_dict)
