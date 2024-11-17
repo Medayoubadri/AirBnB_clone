@@ -10,11 +10,10 @@ class BaseModel:
     """
     BaseModel defines all common attributes methods for other classes.
     ATTRIBUTES:
-        - id: string - unique identifier
-        - created_at: datetime - creation date
-        - updated_at: datetime - update date
+        __init__: initializes a new instance of BaseModel
         __str__: returns a string representation of the instance
         save: updates the public instance attribute updated_at
+        to_dict: returns a dictionary representation of the instance
     """
 
     def __init__(self, *args, **kwargs):
@@ -32,7 +31,6 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            self.save()
 
             from models import storage
             storage.new(self)
