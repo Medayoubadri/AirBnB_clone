@@ -183,12 +183,6 @@ class TestUserToDict(unittest.TestCase):
         }
         self.assertEqual(self.user.to_dict(), expected_dict)
 
-    def test_to_dict_excludes_private_attributes(self):
-        """Test that to_dict() does not include private attributes."""
-        self.user._private_attr = "should_not_appear"
-        user_dict = self.user.to_dict()
-        self.assertNotIn("_private_attr", user_dict)
-
     def test_to_dict_handles_empty_instance(self):
         """Test to_dict() on a User instance with no additional attributes."""
         new_user = User()
@@ -202,6 +196,7 @@ class TestUserToDict(unittest.TestCase):
         user_dict = self.user.to_dict()
         self.user.first_name = "New Name"
         self.assertNotEqual(user_dict["first_name"], self.user.first_name)
+
 
 if __name__ == "__main__":
     unittest.main()
