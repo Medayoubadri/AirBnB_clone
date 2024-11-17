@@ -73,7 +73,7 @@ class TestFileStorage(unittest.TestCase):
         if os.path.exists("file.json"):
             os.remove("file.json")
         try:
-            self.storage.reload()  # Should not raise an exception
+            self.storage.reload()
         except Exception as e:
             self.fail(f"reload() raised {type(e)} unexpectedly!")
 
@@ -82,7 +82,7 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "w", encoding="utf-8") as file:
             file.write("{ invalid json }")
         try:
-            self.storage.reload()  # Should not raise an exception
+            self.storage.reload()
         except Exception as e:
             self.fail(f"reload() raised {type(e)} unexpectedly!")
 

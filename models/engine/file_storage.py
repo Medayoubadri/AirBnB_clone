@@ -6,11 +6,11 @@ to a JSON file and deserializes JSON file to instances.
 import json
 from models.base_model import BaseModel
 from models.user import User
-# from models.state import State
-# from models.city import City
-# from models.amenity import Amenity
-# from models.place import Place
-# from models.review import Review
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class FileStorage:
@@ -31,8 +31,8 @@ class FileStorage:
         obj_dict = {
             key: obj.to_dict() for key, obj in FileStorage.__objects.items()
             }
-        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
-            json.dump(obj_dict, f)
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
+            json.dump(obj_dict, file)
 
     def reload(self):
         """Deserializes the JSON file to __objects, if it exists."""

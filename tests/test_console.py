@@ -305,13 +305,57 @@ class TestHBNBCommand(unittest.TestCase):
         self.assertEqual(storage.all()[key].name, "Pool")
         self.assertEqual(storage.all()[key].rating, 5)
 
-    def test_invalid_syntax(self):
-        """Test invalid command syntax"""
-        self.console.onecmd("MyModel.create()")
+    def test_do_count_direct_command(self):
+        """Test count command with direct syntax"""
+        self.console.onecmd("create User")
+        self.console.onecmd("create User")
+        self.held_stdout.truncate(0)
+        self.held_stdout.seek(0)
+        self.console.onecmd("count User")
+        self.assertEqual("2\n", self.held_stdout.getvalue())
+
+    def test_do_count_invalid_class(self):
+        """Test count command with invalid class"""
+        self.console.onecmd("count MyModel")
         self.assertEqual(
             "** class doesn't exist **\n", self.held_stdout.getvalue()
-            )
+        )
 
+    def test_do_all_dot_notation(self):
+        """Test all method with dot notation"""
+        self.console.onecmd("create State")
+        state_id = self.held_stdout.getvalue().strip()
+        self.held_stdout.truncate(0)
+        self.held_stdout.seek(0)
+        self.console.onecmd("State.all()")
+        output = self.held_stdout.getvalue()
+        self.assertIn(f"[State] ({state_id})", output)
+
+    def test_do_update_dot_notation_key_value(self):
+        """Test update method with dot notation (key-value)"""
+        self.console.onecmd("create Place")
+        place_id = self.held_stdout.getvalue().strip()
+        self.held_stdout.truncate(0)
+        self.held_stdout.seek(0)
+        self.console.onecmd(f'Place.update("{place_id}", "description", "Beautiful")')
+        self.assertEqual("", self.held_stdout.getvalue())
+        key = f"Place.{place_id}"
+        self.assertIn(key, storage.all())
+        self.assertEqual(storage.all()[key].description, "Beautiful")
+
+    def test_do_update_dot_notation_dict(self):
+        """Test update method with dot notation (dictionary)"""
+        self.console.onecmd("create City")
+        city_id = self.held_stdout.getvalue().strip()
+        self.held_stdout.truncate(0)
+        self.held_stdout.seek(0)
+        update_dict = {"population": 500000, "nickname": "Metropolis"}
+        self.console.onecmd(f'City.update("{city_id}", {update_dict})')
+        self.assertEqual("", self.held_stdout.getvalue())
+        key = f"City.{city_id}"
+        self.assertIn(key, storage.all())
+        self.assertEqual(storage.all()[key].population, 500000)
+        self.assertEqual(storage.all()[key].nickname, "Metropolis")
 
 
 if __name__ == "__main__":

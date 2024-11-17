@@ -1,17 +1,16 @@
 #!/usr/bin/python3
-"""Console module for HBNB project"""
+"""This module defines the entry point of the command interpreter."""
 import cmd
+import re
 import shlex
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
-# from models.state import State
-# from models.city import City
-# from models.place import Place
-# from models.amenity import Amenity
-# from models.review import Review
-import ast
-import json
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
@@ -20,11 +19,11 @@ class HBNBCommand(cmd.Cmd):
     classes = {
         "BaseModel": BaseModel,
         "User": User,
-        # "State": State,
-        # "City": City,
-        # "Place": Place,
-        # "Amenity": Amenity,
-        # "Review": Review
+        "State": State,
+        "City": City,
+        "Place": Place,
+        "Amenity": Amenity,
+        "Review": Review
     }
 
     def do_quit(self, arg):
@@ -107,122 +106,110 @@ class HBNBCommand(cmd.Cmd):
             return
         print(obj_list)
 
-    def do_update(self, arg):
-        """Updates an instance based on the class name and id"""
-        args = shlex.split(arg)
-        if not args:
+    def do_count(self, arg):
+        """Counts the number of instances of a class"""
+        if not arg:
             print("** class name missing **")
             return
-        class_name = args[0]
-        if class_name not in HBNBCommand.classes:
+        if arg not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
+        count = sum(1 for key in storage.all() if key.startswith(f"{arg}."))
+        print(count)
+
+    def do_update(self, arg):
+        """
+        Update a class instance of a given id by adding or updating
+        a given attribute key/value pair or dictionary.
+        """
+        args = HBNBCommand.args_parser(arg)
+        objects = storage.all()
+
+        if not args:
+            print("** class name missing **")
+            return False
+        if args[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return False
         if len(args) < 2:
             print("** instance id missing **")
-            return
-        key = f"{class_name}.{args[1]}"
-        if key not in storage.all():
+            return False
+
+        instance_key = f"{args[0]}.{args[1]}"
+        if instance_key not in objects:
             print("** no instance found **")
-            return
+            return False
         if len(args) < 3:
             print("** attribute name missing **")
-            return
-        if len(args) < 4:
-            print("** value missing **")
-            return
-        obj = storage.all()[key]
-        attr_name = args[2]
-        attr_value = args[3]
-        try:
-            attr_value = ast.literal_eval(attr_value)
-        except Exception:
-            pass
-        setattr(obj, attr_name, attr_value)
-        obj.save()
+            return False
+        if len(args) == 3:
+            try:
+                if not isinstance(eval(args[2]), dict):
+                    print("** value missing **")
+                    return False
+            except (NameError, SyntaxError):
+                print("** value missing **")
+                return False
+        
+        obj = objects[instance_key]
 
-    def dic_parser(self, arg):
+        if len(args) == 4:
+            attr_name, attr_value = args[2], args[3]
+            if attr_name in obj.__class__.__dict__:
+                value_type = type(obj.__class__.__dict__[attr_name])
+                obj.__dict__[attr_name] = value_type(attr_value)
+            else:
+                obj.__dict__[attr_name] = attr_value
+        elif isinstance(eval(args[2]), dict):
+            updates = eval(args[2])
+            for key, value in updates.items():
+                if (key in obj.__class__.__dict__ and 
+                    type(obj.__class__.__dict__[key]) in {str, int, float}):
+                    value_type = type(obj.__class__.__dict__[key])
+                    obj.__dict__[key] = value_type(value)
+                else:
+                    obj.__dict__[key] = value
+
+        storage.save()
+
+    def default(self, arg):
         """
-        Parse the cmd string and return class name, method name, and arguments
+        Handle unrecognized commands and allow for dot notation
+        (e.g., ClassName.command(args)).
         """
-        parts = arg.split('.', 1)
-        if len(parts) != 2:
-            return None, None, None
-        class_name, method_with_args = parts
-        if '(' not in method_with_args or not method_with_args.endswith(')'):
-            return None, None, None
-        method_name, args_str = method_with_args.split('(', 1)
-        args_str = args_str[:-1]
-        return class_name, method_name, args_str
+        match = re.search(r"\.", arg)
+        if match:
+            class_name, command_with_args = arg[:match.start()], arg[match.end():]
+            if class_name in HBNBCommand.classes:
+                match = re.search(r"\((.*?)\)", command_with_args)
+                if match:
+                    command = command_with_args[:match.start()]
+                    command_args = match.group(1)
+                    method = getattr(self, f"do_{command}", None)
+                    if method:
+                        call_args = f"{class_name} {command_args}".strip()
+                        return method(call_args)
+        print(f"*** Unknown syntax: {arg}")
+        return False
 
-    # def do_count(self, class_name):
-    #     """Counts the number of instances of a class"""
-    #     count = sum(
-    #         1 for key in storage.all() if key.startswith(f"{class_name}.")
-    #     )
-    #     print(count)
+    @staticmethod
+    def args_parser(arg):
+        """Parse input arguments and handle special characters"""
+        curlies = re.search(r"\{(.*?)\}", arg)
+        brackets = re.search(r"\[(.*?)\]", arg)
 
-    # def handle_update(self, class_name, args_str):
-    #     """Handles the update command from default method"""
-    #     args_str = args_str.strip().strip("'\"")
+        def split_and_strip(input_str):
+            return [item.strip(",") for item in shlex.split(input_str)]
 
-    #     try:
-    #         start = args_str.index('{')
-    #         end = args_str.rindex('}')
-
-    #         instance_id = args_str[:start].strip().strip(',').strip("'\"")
-    #         dict_str = args_str[start:end+1]
-
-    #         update_dict = ast.literal_eval(dict_str)
-
-    #         if isinstance(update_dict, dict):
-    #             for key, value in update_dict.items():
-    #                 self.do_update(
-    #                     f"{class_name} {instance_id} {key} {json.dumps(value)}"
-    #                     )
-    #         else:
-    #             raise ValueError("Invalid dictionary format")
-
-    #     except (ValueError, SyntaxError):
-    #         args = shlex.split(args_str)
-    #         if len(args) >= 3:
-    #             instance_id = args[0]
-    #             attr_name = args[1]
-    #             attr_value = args[2]
-    #             self.do_update(
-    #                 f"{class_name} {instance_id} {attr_name} {attr_value}"
-    #                 )
-    #         else:
-    #             print("** attribute name missing **")
-
-    # def default(self, arg):
-    #     """Handle class-specific commands"""
-    #     class_name, method_name, args_str = self.dic_parser(arg)
-    #     if class_name is None:
-    #         print(f"*** Unknown syntax: {arg}")
-    #         return
-
-    #     if class_name not in HBNBCommand.classes:
-    #         print("** class doesn't exist **")
-    #         return
-
-    #     method_dispatch = {
-    #         'all': self.do_all,
-    #         'count': self.do_count,
-    #         'show': self.do_show,
-    #         'destroy': self.do_destroy,
-    #     }
-
-    #     if method_name in method_dispatch:
-    #         method = method_dispatch[method_name]
-    #         if method_name == 'count':
-    #             method(class_name)
-    #         else:
-    #             args = f"{class_name} {args_str.strip('\"')}"
-    #             method(args)
-    #     elif method_name == 'update':
-    #         self.handle_update(class_name, args_str)
-    #     else:
-    #         print(f"*** Unknown syntax: {arg}")
+        if curlies:
+            lexer = split_and_strip(arg[:curlies.span()[0]])
+            lexer.append(curlies.group())
+            return lexer
+        elif brackets:
+            lexer = split_and_strip(arg[:brackets.span()[0]])
+            lexer.append(brackets.group())
+            return lexer
+        return split_and_strip(arg)
 
 
 if __name__ == '__main__':
