@@ -337,7 +337,8 @@ class TestHBNBCommand(unittest.TestCase):
         place_id = self.held_stdout.getvalue().strip()
         self.held_stdout.truncate(0)
         self.held_stdout.seek(0)
-        self.console.onecmd(f'Place.update("{place_id}", "description", "Beautiful")')
+        self.console.onecmd(
+            f'Place.update("{place_id}", "description", "Beautiful")')
         self.assertEqual("", self.held_stdout.getvalue())
         key = f"Place.{place_id}"
         self.assertIn(key, storage.all())

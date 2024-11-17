@@ -150,7 +150,7 @@ class HBNBCommand(cmd.Cmd):
             except (NameError, SyntaxError):
                 print("** value missing **")
                 return False
-        
+
         obj = objects[instance_key]
 
         if len(args) == 4:
@@ -163,8 +163,10 @@ class HBNBCommand(cmd.Cmd):
         elif isinstance(eval(args[2]), dict):
             updates = eval(args[2])
             for key, value in updates.items():
-                if (key in obj.__class__.__dict__ and 
-                    type(obj.__class__.__dict__[key]) in {str, int, float}):
+                if (key in obj.__class__.__dict__ and
+                        type(
+                            obj.__class__.__dict__[key]
+                            ) in {str, int, float}):
                     value_type = type(obj.__class__.__dict__[key])
                     obj.__dict__[key] = value_type(value)
                 else:
@@ -179,7 +181,8 @@ class HBNBCommand(cmd.Cmd):
         """
         match = re.search(r"\.", arg)
         if match:
-            class_name, command_with_args = arg[:match.start()], arg[match.end():]
+            class_name, command_with_args = arg[
+                :match.start()], arg[match.end():]
             if class_name in HBNBCommand.classes:
                 match = re.search(r"\((.*?)\)", command_with_args)
                 if match:
