@@ -58,12 +58,20 @@ class TestHBNBCommandHelp(unittest.TestCase):
             self.assertEqual(h, output.getvalue().strip())
 
 
-class TestHBNBCommand_exit(unittest.TestCase):
-    """Unittests for testing exiting from the HBNB command interpreter."""
+class TestHBNBCommandExit(unittest.TestCase):
+    """
+    Unittests for testing exit behavior of the HBNB command interpreter.
+    """
 
     def test_quit_exits(self):
+        """Test if the 'quit' command exits the interpreter."""
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertTrue(HBNBCommand().onecmd("quit"))
+
+    def test_eof_exits(self):
+        """Test if the 'EOF' command exits the interpreter."""
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertTrue(HBNBCommand().onecmd("EOF"))
 
 
 class TestHBNBCommand_create(unittest.TestCase):
