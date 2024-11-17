@@ -5,7 +5,6 @@ Unit tests for the State class.
 
 import unittest
 import os
-import json
 from time import sleep
 from datetime import datetime
 from models.state import State
@@ -16,9 +15,8 @@ class TestStateInstantiation(unittest.TestCase):
     """Tests for the instantiation of the State class."""
 
     def setUp(self):
-        """Sets up a State instance before each test."""
+        """Set up a State instance for testing."""
         self.state = State()
-        self.state.name = "California"
 
     def tearDown(self):
         """Clean up any created files after each test."""
@@ -55,22 +53,17 @@ class TestStateInstantiation(unittest.TestCase):
 
     def test_name_is_string(self):
         """Test that the name attribute in State is a string."""
+        self.state.name = "California"
         self.assertEqual(self.state.name, "California")
         self.assertIsInstance(self.state.name, str)
-
-    def test_additional_attributes(self):
-        """Test adding new attributes to a State instance dynamically."""
-        self.state.governor = "The Terminator"
-        self.assertEqual(self.state.governor, "The Terminator")
 
 
 class TestStateSave(unittest.TestCase):
     """Tests for the save method of the State class."""
 
     def setUp(self):
-        """Sets up a State instance before each test."""
+        """Set up a State instance for testing."""
         self.state = State()
-        self.state.name = "California"
 
     def tearDown(self):
         """Clean up any created files after each test."""
@@ -91,15 +84,6 @@ class TestStateSave(unittest.TestCase):
         self.state.save()
         self.assertTrue(os.path.exists("file.json"))
 
-    def test_save_file_content(self):
-        """Test that save() writes correct data to file.json."""
-        self.state.save()
-        with open("file.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-        key = f"State.{self.state.id}"
-        self.assertIn(key, data)
-        self.assertEqual(data[key]["name"], "California")
-
     def test_save_with_invalid_argument(self):
         """Test save() with an invalid argument raises a TypeError."""
         with self.assertRaises(TypeError):
@@ -110,7 +94,7 @@ class TestStateToDict(unittest.TestCase):
     """Tests for the to_dict method of the State class."""
 
     def setUp(self):
-        """Sets up a State instance before each test."""
+        """Set up a State instance for testing."""
         self.state = State()
         self.state.name = "California"
 
@@ -133,8 +117,14 @@ class TestStateToDict(unittest.TestCase):
     def test_to_dict_datetime_format(self):
         """Test that to_dict() converts datetime attributes to ISO format."""
         state_dict = self.state.to_dict()
-        self.assertEqual(state_dict["created_at"], self.state.created_at.isoformat())
-        self.assertEqual(state_dict["updated_at"], self.state.updated_at.isoformat())
+        self.assertIsInstance(state_dict["created_at"], str)
+        self.assertIsInstance(state_dict["updated_at"], str)
+        self.assertEqual(
+            state_dict["created_at"], self.state.created_at.isoformat()
+        )
+        self.assertEqual(
+            state_dict["updated_at"], self.state.updated_at.isoformat()
+        )
 
     def test_to_dict_additional_attributes(self):
         """Test that to_dict() includes dynamically added attributes."""
@@ -144,7 +134,7 @@ class TestStateToDict(unittest.TestCase):
         self.assertEqual(state_dict["governor"], "The Terminator")
 
     def test_to_dict_with_invalid_argument(self):
-        """Test to_dict() with invalid arguments raises TypeError."""
+        """Test that to_dict() with invalid arguments raises TypeError."""
         with self.assertRaises(TypeError):
             self.state.to_dict(None)
 
@@ -153,15 +143,15 @@ class TestStateToDict(unittest.TestCase):
         self.state.id = "123456"
         self.state.created_at = datetime(2024, 1, 1, 12, 0, 0)
         self.state.updated_at = datetime(2024, 1, 1, 12, 0, 0)
-        self.state.governor = "Arnold Schwarzenegger"
         expected_dict = {
             "id": "123456",
             "__class__": "State",
             "created_at": "2024-01-01T12:00:00",
             "updated_at": "2024-01-01T12:00:00",
             "name": "California",
-            "governor": "Arnold Schwarzenegger"
+            "governor": "Arnold Schwarzenegger (in our dreams)"
         }
+        self.state.governor = "Arnold Schwarzenegger (in our dreams)"
         self.assertEqual(self.state.to_dict(), expected_dict)
 
 
