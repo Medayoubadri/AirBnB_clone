@@ -12,11 +12,11 @@ from models.user import User
 from models import storage
 
 
-class TestUser(unittest.TestCase):
-    """Comprehensive tests for the User class."""
+class TestUserInstantiation(unittest.TestCase):
+    """Tests for instantiation of the User class."""
 
     def setUp(self):
-        """Sets up a User instance before each test."""
+        """Set up a User instance for testing."""
         self.user = User()
         self.user.email = "agent@mi6.co.uk"
         self.user.password = "shaken_not_stirred"
@@ -24,13 +24,12 @@ class TestUser(unittest.TestCase):
         self.user.last_name = "Bond"
 
     def tearDown(self):
-        """Clean up any created files after each test."""
+        """Clean up any created files."""
         try:
             os.remove("file.json")
         except FileNotFoundError:
             pass
 
-    # Section 1: Tests for Instantiation
     def test_instance_creation(self):
         """Test creating a new User instance without arguments."""
         self.assertIsInstance(self.user, User)
@@ -71,7 +70,23 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.middle_name, "Danger")
         self.assertEqual(self.user.age, 42)
 
-    # Section 2: Tests for save Method
+
+class TestUserSave(unittest.TestCase):
+    """Tests for the save method of the User class."""
+
+    def setUp(self):
+        """Set up a User instance for testing."""
+        self.user = User()
+        self.user.email = "agent@mi6.co.uk"
+        self.user.password = "shaken_not_stirred"
+
+    def tearDown(self):
+        """Clean up any created files."""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
     def test_save_updates_updated_at(self):
         """Test that save() updates the updated_at attribute."""
         old_updated_at = self.user.updated_at
@@ -98,7 +113,16 @@ class TestUser(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.user.save(None)
 
-    # Section 3: Tests for to_dict Method
+
+class TestUserToDict(unittest.TestCase):
+    """Tests for the to_dict method of the User class."""
+
+    def setUp(self):
+        """Set up a User instance for testing."""
+        self.user = User()
+        self.user.email = "agent@mi6.co.uk"
+        self.user.password = "shaken_not_stirred"
+
     def test_to_dict_includes_all_attributes(self):
         """Test that to_dict() includes all User attributes."""
         user_dict = self.user.to_dict()
@@ -111,14 +135,10 @@ class TestUser(unittest.TestCase):
     def test_to_dict_datetime_format(self):
         """Test that to_dict() converts datetime attributes to ISO format."""
         user_dict = self.user.to_dict()
-        self.assertIsInstance(user_dict["created_at"], str)
-        self.assertIsInstance(user_dict["updated_at"], str)
         self.assertEqual(
-            user_dict["created_at"], self.user.created_at.isoformat()
-            )
+            user_dict["created_at"], self.user.created_at.isoformat())
         self.assertEqual(
-            user_dict["updated_at"], self.user.updated_at.isoformat()
-            )
+            user_dict["updated_at"], self.user.updated_at.isoformat())
 
     def test_to_dict_additional_attributes(self):
         """Test that to_dict() includes dynamically added attributes."""
@@ -146,9 +166,7 @@ class TestUser(unittest.TestCase):
             "created_at": "2024-01-01T12:00:00",
             "updated_at": "2024-01-01T12:00:00",
             "email": "agent@mi6.co.uk",
-            "password": "shaken_not_stirred",
-            "first_name": "James",
-            "last_name": "Bond"
+            "password": "shaken_not_stirred"
         }
         self.assertEqual(self.user.to_dict(), expected_dict)
 
