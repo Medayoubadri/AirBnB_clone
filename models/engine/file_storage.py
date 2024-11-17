@@ -16,6 +16,15 @@ from models.review import Review
 class FileStorage:
     __file_path = "file.json"
     __objects = {}
+    __class_map = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "State": State,
+        "City": City,
+        "Amenity": Amenity,
+        "Place": Place,
+        "Review": Review
+    }
 
     def all(self):
         """Returns the dictionary __objects."""
@@ -30,7 +39,7 @@ class FileStorage:
         """Serializes __objects to the JSON file."""
         obj_dict = {
             key: obj.to_dict() for key, obj in FileStorage.__objects.items()
-            }
+        }
         with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
             json.dump(obj_dict, file)
 
@@ -41,7 +50,7 @@ class FileStorage:
                 obj_dict = json.load(file)
                 for key, obj_data in obj_dict.items():
                     class_name = obj_data["__class__"]
-                    if class_name in globals():
-                        self.__objects[key] = globals()[class_name](**obj_data)
+                    if class_name in self.__class_map:
+                        self.__objects[key] = self.__class_map[class_name](**obj_data)
         except Exception:
             pass
