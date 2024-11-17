@@ -13,20 +13,13 @@ from models.amenity import Amenity
 from models import storage
 
 
-class TestAmenity(unittest.TestCase):
-    """Thorough and slightly amusing tests for the Amenity class."""
+class TestAmenity_instantiation(unittest.TestCase):
+    """Unittests for testing instantiation of the Amenity class."""
 
     def setUp(self):
         """Sets up an Amenity instance before each test."""
         self.amenity = Amenity()
         self.amenity.name = "Infinity Pool"
-
-    def tearDown(self):
-        """Clean up any created files after each test."""
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
 
     def test_instance_creation(self):
         """Test creating a new Amenity instance without arguments."""
@@ -71,6 +64,41 @@ class TestAmenity(unittest.TestCase):
         self.assertEqual(self.amenity.name, "Infinity Pool")
         self.assertIsInstance(self.amenity.name, str)
 
+    def test_args_unused(self):
+        """Test that passing None doesn't add it to the instance's dictionary."""
+        am = Amenity(None)
+        self.assertNotIn(None, am.__dict__.values())
+
+    def test_instantiation_with_kwargs(self):
+        """Test instantiation with keyword arguments."""
+        dt = datetime.today()
+        dt_iso = dt.isoformat()
+        am = Amenity(id="345", created_at=dt_iso, updated_at=dt_iso)
+        self.assertEqual(am.id, "345")
+        self.assertEqual(am.created_at, dt)
+        self.assertEqual(am.updated_at, dt)
+
+    def test_instantiation_with_None_kwargs(self):
+        """Test that instantiation with None keyword arguments raises a TypeError."""
+        with self.assertRaises(TypeError):
+            Amenity(id=None, created_at=None, updated_at=None)
+
+
+class TestAmenity_save(unittest.TestCase):
+    """Unittests for testing save method of the Amenity class."""
+
+    def setUp(self):
+        """Sets up an Amenity instance before each test."""
+        self.amenity = Amenity()
+        self.amenity.name = "Infinity Pool"
+
+    def tearDown(self):
+        """Clean up any created files after each test."""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
     def test_save_updates_updated_at(self):
         """Test that save() updates the updated_at attribute."""
         old_updated_at = self.amenity.updated_at
@@ -102,6 +130,27 @@ class TestAmenity(unittest.TestCase):
         """
         with self.assertRaises(TypeError):
             self.amenity.save(None)
+
+    def test_two_saves(self):
+        """Test that two consecutive saves update updated_at differently."""
+        am = Amenity()
+        sleep(0.05)
+        first_updated_at = am.updated_at
+        am.save()
+        second_updated_at = am.updated_at
+        self.assertLess(first_updated_at, second_updated_at)
+        sleep(0.05)
+        am.save()
+        self.assertLess(second_updated_at, am.updated_at)
+
+
+class TestAmenity_to_dict(unittest.TestCase):
+    """Unittests for testing to_dict method of the Amenity class."""
+
+    def setUp(self):
+        """Sets up an Amenity instance before each test."""
+        self.amenity = Amenity()
+        self.amenity.name = "Infinity Pool"
 
     def test_to_dict_includes_all_attributes(self):
         """Test that to_dict() includes all Amenity attributes."""
@@ -158,6 +207,11 @@ class TestAmenity(unittest.TestCase):
         }
         self.amenity.access = "VIP Only"
         self.assertEqual(self.amenity.to_dict(), expected_dict)
+
+    def test_contrast_to_dict_dunder_dict(self):
+        """Test that to_dict() returns a different dictionary than __dict__."""
+        am = Amenity()
+        self.assertNotEqual(am.to_dict(), am.__dict__)
 
 
 if __name__ == "__main__":
