@@ -74,11 +74,14 @@ class TestHBNBCommandExit(unittest.TestCase):
             self.assertTrue(HBNBCommand().onecmd("EOF"))
 
 
-class TestHBNBCommand_create(unittest.TestCase):
-    """Unittests for testing create from the HBNB command interpreter."""
+class TestHBNBCommandCreate(unittest.TestCase):
+    """
+    Unittests for testing 'create' command in the HBNB command interpreter.
+    """
 
     @classmethod
-    def setUp(self):
+    def setUpClass(cls):
+        """Set up the environment before each test."""
         try:
             os.rename("file.json", "tmp")
         except IOError:
@@ -86,7 +89,8 @@ class TestHBNBCommand_create(unittest.TestCase):
         FileStorage.__objects = {}
 
     @classmethod
-    def tearDown(self):
+    def tearDownClass(cls):
+        """Clean up the environment after each test."""
         try:
             os.remove("file.json")
         except IOError:
@@ -97,59 +101,44 @@ class TestHBNBCommand_create(unittest.TestCase):
             pass
 
     def test_create_missing_class(self):
+        """Test create with no class name."""
         correct = "** class name missing **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("create"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_create_invalid_class(self):
+        """Test create with an invalid class name."""
         correct = "** class doesn't exist **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("create MyModel"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_create_invalid_syntax(self):
+        """Test create with invalid syntax."""
         correct = "*** Unknown syntax: MyModel.create()"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("MyModel.create()"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_create_object(self):
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "BaseModel.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create User"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "User.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create State"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "State.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create City"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "City.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create Amenity"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "Amenity.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create Place"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "Place.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("create Review"))
-            self.assertLess(0, len(output.getvalue().strip()))
-            testKey = "Review.{}".format(output.getvalue().strip())
-            self.assertIn(testKey, storage.all().keys())
+        """Test create for valid classes."""
+        classes = [
+            "BaseModel",
+            "User",
+            "State",
+            "City",
+            "Amenity",
+            "Place",
+            "Review"
+        ]
+        for cls in classes:
+            with patch("sys.stdout", new=StringIO()) as output:
+                self.assertFalse(HBNBCommand().onecmd(f"create {cls}"))
+                object_id = output.getvalue().strip()
+                self.assertGreater(len(object_id), 0)
+                test_key = f"{cls}.{object_id}"
+                self.assertIn(test_key, storage.all().keys())
 
 
 class TestHBNBCommand_show(unittest.TestCase):
