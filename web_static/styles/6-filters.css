@@ -27,10 +27,10 @@
     opacity: 0.9;
 }
 
-.locations, .amenities {
+.filters > .locations, .filters > .amenities {
     height: 100%;
     width: 25%;
-    padding-left: 50px;
+    padding-left: 40px;
     position: relative;
 }
 
