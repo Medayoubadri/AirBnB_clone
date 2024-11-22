@@ -19,12 +19,11 @@
     border-radius: 4px;
     margin-right: 30px;
     margin-left: auto;
-    opacity: 1;
-    transition: opacity 0.3s;
+    transition: background-color 0.5s;
 }
 
 .filters button:hover {
-    opacity: 0.9;
+    background-color: #e04f54;
 }
 
 .locations, .amenities {
