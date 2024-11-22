@@ -40,7 +40,7 @@
     position: absolute;
     width: 100%;
     top: 100%;
-    left: -0.8px;
+    left: 0;
     padding: 20px 0;
     margin-top: 0;
     list-style: none;
@@ -71,10 +71,12 @@
     border-radius: 4px;
     margin-right: 30px;
     margin-left: auto;
-    transition: background-color 1s;
+    transition: background-color 0.3s;
+    cursor: pointer;
 }
 
-.filters button:hover {
+.filters button:hover,
+.filters button:focus {
     transition: background-color 0.3s;
     background-color: #f05359;
 }
@@ -104,5 +106,24 @@
         width: 100%;
         border: none;
         padding: 10px 0;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .filters {
+        background-color: #000;
+        border: 1px solid #fff;
+    }
+
+    .popover {
+        background-color: #000;
+        border: 1px solid #fff;
+    }
+
+    .filters button {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #fff;
     }
 }
