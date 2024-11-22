@@ -1,0 +1,17 @@
+/* Footer styles */
+footer {
+    background-color: white;
+    height: 60px;
+    width: 100%;
+    border-top: 1px solid #CCCCCC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+    footer {
+        height: 40px;
+    }
+}
+
